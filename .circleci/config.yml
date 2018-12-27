@@ -1,0 +1,54 @@
+version: 2
+
+jobs:
+  test:
+    docker:
+      - image: circleci/ruby:2.5.3-node-browsers
+        environment:
+          BUNDLE_JOBS: 3
+          BUNDLE_RETRY: 3
+          BUNDLE_PATH: vendor/bundle
+
+    steps:
+      - checkout
+
+      # Restore bundle cache
+      - restore_cache:
+          keys:
+            - skylab-api-bundle-v1-{{ checksum "Gemfile.lock" }}
+            - skylab-api-bundle-v1-
+
+      - run:
+          name: Install application dependencies
+          command: |
+            bundle install --jobs=4 --retry=3 --path vendor/bundle
+
+      - save_cache:
+          paths:
+            - ./vendor/bundle
+          key: skylab-api-bundle-v1-{{ checksum "Gemfile.lock" }}
+
+      # Lint
+      - run:
+          name: Lint
+          command: bundle exec rubocop
+
+      # Unit tests
+      - run:
+          name: Run unit tests
+          command: |
+            mkdir /tmp/test-results
+            TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)"
+            bundle exec rspec $TEST_FILES
+
+workflows:
+  version: 2
+
+  test:
+    jobs:
+      - test:
+          filters:
+            branches:
+              ignore:
+                - staging
+                - production
