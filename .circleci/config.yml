@@ -15,8 +15,8 @@ jobs:
       # Restore bundle cache
       - restore_cache:
           keys:
-            - skylab-api-bundle-v1-{{ checksum "Gemfile.lock" }}
-            - skylab-api-bundle-v1-
+            - skylab-api-ruby-bundle-v1-{{ checksum "Gemfile.lock" }}
+            - skylab-api-ruby-bundle-v1-
 
       - run:
           name: Install application dependencies
@@ -26,7 +26,7 @@ jobs:
       - save_cache:
           paths:
             - ./vendor/bundle
-          key: skylab-api-bundle-v1-{{ checksum "Gemfile.lock" }}
+          key: skylab-api-ruby-bundle-v1-{{ checksum "Gemfile.lock" }}
 
       # Lint
       - run:
