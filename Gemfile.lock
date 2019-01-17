@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    skylab_api (1.0.0)
+    skylab_core_client (1.0.0)
 
 GEM
   remote: https://rubygems.org/
@@ -59,7 +59,7 @@ DEPENDENCIES
   rspec (~> 3.8.0)
   rubocop
   shoulda-matchers (= 3.1.2)
-  skylab_api!
+  skylab_core_client!
 
 BUNDLED WITH
    1.17.2
