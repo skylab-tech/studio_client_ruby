@@ -2,17 +2,17 @@ lib = File.expand_path('lib', __dir__)
 
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-require 'skylab_core/version'
+require 'skylab_genesis/version'
 
 Gem::Specification.new do |gem|
-  gem.name          = 'skylab_core'
-  gem.version       = SkylabCore::VERSION
+  gem.name          = 'skylab_genesis'
+  gem.version       = SkylabGenesis::VERSION
   gem.platform      = Gem::Platform::RUBY
   gem.authors       = ['Jordan Ell']
   gem.email         = ['info@skylabtech.ai']
   gem.description   = 'skylabtech.ai ruby api client'
-  gem.summary       = 'A HTTP client for accessing api.skylabtech.ai services.'
-  gem.homepage      = 'https://github.com/skylab-tech/core_client'
+  gem.summary       = 'A HTTP client for accessing skylabtech.ai services.'
+  gem.homepage      = 'https://github.com/skylab-tech/genesis_client_ruby'
   gem.license       = 'Apache-2.0'
 
   gem.files         = Dir['{lib}/**/*.rb', 'bin/*']

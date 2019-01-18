@@ -1,19 +1,19 @@
 # Skylab Core
 
-A Ruby client for accessing the Skylab Core service.
+A Ruby client for accessing the Skylab Genesis service.
 
 [skylabtech.ai](http://skylabtech.ai)
 
 ## Installation
 
 ```bash
-$ gem install skylab_core
+$ gem install skylab_genesis
 ```
 
 or with Bundler:
 
 ```bash
-$ gem 'skylab_core'
+$ gem 'skylab_genesis'
 $ bundle install
 ```
 
@@ -26,18 +26,18 @@ Create a new instance of the client using your API key.
 
 ```ruby
 require 'rubygems'
-require 'skylab_core'
+require 'skylab_genesis'
 
-client = SkylabCore::Client.new(api_key: 'YOUR API KEY', debug: true)
+client = SkylabGenesis::Client.new(api_key: 'YOUR API KEY', debug: true)
 ```
 
 ### Rails
 
-For a Rails app, create `skylab_core.rb` in `/config/initializers/`
+For a Rails app, create `skylab_genesis.rb` in `/config/initializers/`
 with the following:
 
 ```ruby
-SkylabCore::Client.configure do |config|
+SkylabGenesis::Client.configure do |config|
   config.api_key = 'YOUR API KEY'
   config.debug = true
 end
@@ -47,7 +47,7 @@ In your application code where you want to access Skylab API:
 
 ```ruby
 begin
-  result = SkylabCore::Client.new.create_job('{}', '/input', '/output')
+  result = SkylabGenesis::Client.new.create_job(job: { profile_id: 123 })
   puts result
 rescue => e
   puts "Error - #{e.class.name}: #{e.message}"
@@ -198,11 +198,11 @@ client.delete_photo(id: 123)
 The following errors may be generated:
 
 ```ruby
-SkylabCore::ClientInvalidEndpoint - the target URI is probably incorrect
-SkylabCore::ClientInvalidKey - the skylab client API key is invalid
-SkylabCore::ClientBadRequest - the API request is invalid
-SkylabCore::ClientConnectionRefused - the target URI is probably incorrect
-SkylabCore::ClientUnknownError - an unhandled HTTP error occurred
+SkylabGenesis::ClientInvalidEndpoint - the target URI is probably incorrect
+SkylabGenesis::ClientInvalidKey - the skylab client API key is invalid
+SkylabGenesis::ClientBadRequest - the API request is invalid
+SkylabGenesis::ClientConnectionRefused - the target URI is probably incorrect
+SkylabGenesis::ClientUnknownError - an unhandled HTTP error occurred
 ```
 
 ## Running tests
@@ -228,7 +228,7 @@ gets sent to Skylab API. You will most likely find this information in your logs
 To enable it, simply put `debug: true` as a parameter when instantiating the API object.
 
 ```ruby
-client = SkylabCore::Client.new(api_key: 'YOUR API KEY', debug: true)
+client = SkylabGenesis::Client.new(api_key: 'YOUR API KEY', debug: true)
 ```
 
 ### Response Ranges
@@ -251,5 +251,5 @@ If you're receiving an error in the 400 response range follow these steps:
 Build gem with
 
 ```bash
-gem build skylab_core.gemspec
+gem build skylab_genesis.gemspec
 ```
