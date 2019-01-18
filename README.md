@@ -7,13 +7,13 @@ A Ruby client for accessing the Skylab API service.
 ## Installation
 
 ```bash
-$ gem install skylab_core_client
+$ gem install skylab_core
 ```
 
 or with Bundler:
 
 ```bash
-$ gem 'skylab_core_client'
+$ gem 'skylab_core'
 $ bundle install
 ```
 
@@ -26,14 +26,14 @@ Create a new instance of the client using your API key.
 
 ```ruby
 require 'rubygems'
-require 'skylab_core_client'
+require 'skylab_core'
 
 client = SkylabCore::Client.new(api_key: 'YOUR API KEY', debug: true)
 ```
 
 ### Rails
 
-For a Rails app, create `skylab_core_client.rb` in `/config/initializers/`
+For a Rails app, create `skylab_core.rb` in `/config/initializers/`
 with the following:
 
 ```ruby
@@ -251,5 +251,5 @@ If you're receiving an error in the 400 response range follow these steps:
 Build gem with
 
 ```bash
-gem build skylab_core_client.gemspec
+gem build skylab_core.gemspec
 ```
