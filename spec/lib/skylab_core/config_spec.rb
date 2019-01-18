@@ -1,8 +1,8 @@
-require File.expand_path('../../../lib/skylab.rb', __dir__)
+require File.expand_path('../../../lib/skylab_core.rb', __dir__)
 
-RSpec.describe Skylab::Config do
+RSpec.describe SkylabCore::Config do
   before(:each) do
-    @config = Skylab::Config.new
+    @config = SkylabCore::Config.new
   end
 
   subject { @config }
@@ -18,14 +18,14 @@ RSpec.describe Skylab::Config do
 
   describe '#defaults' do
     it 'return the proper default config' do
-      Skylab::Config.defaults.empty?.should eq(false)
-      Skylab::Config.defaults[:protocol].should eq('https')
+      SkylabCore::Config.defaults.empty?.should eq(false)
+      SkylabCore::Config.defaults[:protocol].should eq('https')
     end
   end
 
   describe '#initialize' do
     it 'return override default config' do
-      Skylab::Config.new(protocol: 'proto').protocol.should eq('proto')
+      SkylabCore::Config.new(protocol: 'proto').protocol.should eq('proto')
     end
   end
 end

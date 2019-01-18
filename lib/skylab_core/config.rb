@@ -1,6 +1,6 @@
 require_relative 'version'
 
-module Skylab
+module SkylabCore
   class Config
     attr_accessor :settings
 
@@ -22,7 +22,7 @@ module Skylab
     end
 
     def initialize(options = {})
-      @settings = Skylab::Config.defaults.merge(options)
+      @settings = SkylabCore::Config.defaults.merge(options)
     end
 
     def method_missing(meth, *args, &block)

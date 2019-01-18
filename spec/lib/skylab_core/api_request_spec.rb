@@ -1,11 +1,11 @@
-require File.expand_path('../../../lib/skylab.rb', __dir__)
+require File.expand_path('../../../lib/skylab_core.rb', __dir__)
 
-RSpec.describe Skylab::APIRequest do
+RSpec.describe SkylabCore::APIRequest do
   before(:each) do
-    @client = Skylab::Client.new
-    @config = Skylab::Config.new
+    @client = SkylabCore::Client.new
+    @config = SkylabCore::Config.new
 
-    @api_request = Skylab::APIRequest.new(@config)
+    @api_request = SkylabCore::APIRequest.new(@config)
   end
 
   subject { @api_request }
@@ -20,25 +20,25 @@ RSpec.describe Skylab::APIRequest do
     it 'should raise error on 404' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPNotFound.new(1.0, 404, 'Error'))
 
-      expect { @api_request.post(:jobs, {}) }.to raise_error(Skylab::ClientInvalidEndpoint)
+      expect { @api_request.post(:jobs, {}) }.to raise_error(SkylabCore::ClientInvalidEndpoint)
     end
 
     it 'should raise error on 403' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPForbidden.new(1.0, 403, 'Error'))
 
-      expect { @api_request.post(:jobs, {}) }.to raise_error(Skylab::ClientInvalidKey)
+      expect { @api_request.post(:jobs, {}) }.to raise_error(SkylabCore::ClientInvalidKey)
     end
 
     it 'should raise error on 422' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPBadRequest.new(1.0, 422, 'Error'))
 
-      expect { @api_request.post(:jobs, {}) }.to raise_error(Skylab::ClientBadRequest)
+      expect { @api_request.post(:jobs, {}) }.to raise_error(SkylabCore::ClientBadRequest)
     end
 
     it 'should raise error on unknown response' do
       Net::HTTP.any_instance.stub(:request).and_return(false)
 
-      expect { @api_request.post(:jobs, {}) }.to raise_error(Skylab::ClientUnknownError)
+      expect { @api_request.post(:jobs, {}) }.to raise_error(SkylabCore::ClientUnknownError)
     end
   end
 
@@ -52,25 +52,25 @@ RSpec.describe Skylab::APIRequest do
     it 'should raise error on 404' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPNotFound.new(1.0, 404, 'Error'))
 
-      expect { @api_request.get(:jobs, {}) }.to raise_error(Skylab::ClientInvalidEndpoint)
+      expect { @api_request.get(:jobs, {}) }.to raise_error(SkylabCore::ClientInvalidEndpoint)
     end
 
     it 'should raise error on 403' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPForbidden.new(1.0, 403, 'Error'))
 
-      expect { @api_request.get(:jobs, {}) }.to raise_error(Skylab::ClientInvalidKey)
+      expect { @api_request.get(:jobs, {}) }.to raise_error(SkylabCore::ClientInvalidKey)
     end
 
     it 'should raise error on 422' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPBadRequest.new(1.0, 422, 'Error'))
 
-      expect { @api_request.get(:jobs, {}) }.to raise_error(Skylab::ClientBadRequest)
+      expect { @api_request.get(:jobs, {}) }.to raise_error(SkylabCore::ClientBadRequest)
     end
 
     it 'should raise error on unknown response' do
       Net::HTTP.any_instance.stub(:request).and_return(false)
 
-      expect { @api_request.get(:jobs, {}) }.to raise_error(Skylab::ClientUnknownError)
+      expect { @api_request.get(:jobs, {}) }.to raise_error(SkylabCore::ClientUnknownError)
     end
   end
 
@@ -84,25 +84,25 @@ RSpec.describe Skylab::APIRequest do
     it 'should raise error on 404' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPNotFound.new(1.0, 404, 'Error'))
 
-      expect { @api_request.delete(:jobs) }.to raise_error(Skylab::ClientInvalidEndpoint)
+      expect { @api_request.delete(:jobs) }.to raise_error(SkylabCore::ClientInvalidEndpoint)
     end
 
     it 'should raise error on 403' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPForbidden.new(1.0, 403, 'Error'))
 
-      expect { @api_request.delete(:jobs) }.to raise_error(Skylab::ClientInvalidKey)
+      expect { @api_request.delete(:jobs) }.to raise_error(SkylabCore::ClientInvalidKey)
     end
 
     it 'should raise error on 422' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPBadRequest.new(1.0, 422, 'Error'))
 
-      expect { @api_request.delete(:jobs) }.to raise_error(Skylab::ClientBadRequest)
+      expect { @api_request.delete(:jobs) }.to raise_error(SkylabCore::ClientBadRequest)
     end
 
     it 'should raise error on unknown response' do
       Net::HTTP.any_instance.stub(:request).and_return(false)
 
-      expect { @api_request.delete(:jobs) }.to raise_error(Skylab::ClientUnknownError)
+      expect { @api_request.delete(:jobs) }.to raise_error(SkylabCore::ClientUnknownError)
     end
   end
 
@@ -116,25 +116,25 @@ RSpec.describe Skylab::APIRequest do
     it 'should raise error on 404' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPNotFound.new(1.0, 404, 'Error'))
 
-      expect { @api_request.put(:jobs, {}) }.to raise_error(Skylab::ClientInvalidEndpoint)
+      expect { @api_request.put(:jobs, {}) }.to raise_error(SkylabCore::ClientInvalidEndpoint)
     end
 
     it 'should raise error on 403' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPForbidden.new(1.0, 403, 'Error'))
 
-      expect { @api_request.put(:jobs, {}) }.to raise_error(Skylab::ClientInvalidKey)
+      expect { @api_request.put(:jobs, {}) }.to raise_error(SkylabCore::ClientInvalidKey)
     end
 
     it 'should raise error on 422' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPBadRequest.new(1.0, 422, 'Error'))
 
-      expect { @api_request.put(:jobs, {}) }.to raise_error(Skylab::ClientBadRequest)
+      expect { @api_request.put(:jobs, {}) }.to raise_error(SkylabCore::ClientBadRequest)
     end
 
     it 'should raise error on unknown response' do
       Net::HTTP.any_instance.stub(:request).and_return(false)
 
-      expect { @api_request.put(:jobs, {}) }.to raise_error(Skylab::ClientUnknownError)
+      expect { @api_request.put(:jobs, {}) }.to raise_error(SkylabCore::ClientUnknownError)
     end
   end
 
@@ -148,25 +148,25 @@ RSpec.describe Skylab::APIRequest do
     it 'should raise error on 404' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPNotFound.new(1.0, 404, 'Error'))
 
-      expect { @api_request.patch(:jobs, {}) }.to raise_error(Skylab::ClientInvalidEndpoint)
+      expect { @api_request.patch(:jobs, {}) }.to raise_error(SkylabCore::ClientInvalidEndpoint)
     end
 
     it 'should raise error on 403' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPForbidden.new(1.0, 403, 'Error'))
 
-      expect { @api_request.patch(:jobs, {}) }.to raise_error(Skylab::ClientInvalidKey)
+      expect { @api_request.patch(:jobs, {}) }.to raise_error(SkylabCore::ClientInvalidKey)
     end
 
     it 'should raise error on 422' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPBadRequest.new(1.0, 422, 'Error'))
 
-      expect { @api_request.patch(:jobs, {}) }.to raise_error(Skylab::ClientBadRequest)
+      expect { @api_request.patch(:jobs, {}) }.to raise_error(SkylabCore::ClientBadRequest)
     end
 
     it 'should raise error on unknown response' do
       Net::HTTP.any_instance.stub(:request).and_return(false)
 
-      expect { @api_request.patch(:jobs, {}) }.to raise_error(Skylab::ClientUnknownError)
+      expect { @api_request.patch(:jobs, {}) }.to raise_error(SkylabCore::ClientUnknownError)
     end
   end
 end

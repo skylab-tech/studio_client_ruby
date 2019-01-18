@@ -1,8 +1,8 @@
-require File.expand_path('../../../lib/skylab.rb', __dir__)
+require File.expand_path('../../../lib/skylab_core.rb', __dir__)
 
-RSpec.describe Skylab::Client do
+RSpec.describe SkylabCore::Client do
   before(:each) do
-    @client = Skylab::Client.new
+    @client = SkylabCore::Client.new
   end
 
   subject { @client }
@@ -12,13 +12,13 @@ RSpec.describe Skylab::Client do
 
   describe '#configuration' do
     it 'should return a configuration object' do
-      Skylab::Client.configuration.settings.empty?.should eq(false)
+      SkylabCore::Client.configuration.settings.empty?.should eq(false)
     end
   end
 
   describe '#configure' do
     it 'should return a configuration object' do
-      Skylab::Client.configure do |config|
+      SkylabCore::Client.configure do |config|
         config.settings.empty?.should eq(false)
       end
     end
@@ -26,13 +26,13 @@ RSpec.describe Skylab::Client do
 
   describe '#initialize' do
     it 'should set configuration' do
-      Skylab::Client.new(protocol: 'foo').configuration.protocol.should eq('foo')
+      SkylabCore::Client.new(protocol: 'foo').configuration.protocol.should eq('foo')
     end
   end
 
   describe '#list_jobs' do
     it 'should return response' do
-      Skylab::APIRequest.any_instance.stub(:get).and_return(true)
+      SkylabCore::APIRequest.any_instance.stub(:get).and_return(true)
 
       @client.list_jobs.should eq(true)
     end
@@ -40,11 +40,11 @@ RSpec.describe Skylab::Client do
 
   describe '#get_job' do
     it 'should raise error with no id' do
-      expect { @client.get_job }.to raise_error(Skylab::ClientNilArgument)
+      expect { @client.get_job }.to raise_error(SkylabCore::ClientNilArgument)
     end
 
     it 'should return response' do
-      Skylab::APIRequest.any_instance.stub(:get).and_return(true)
+      SkylabCore::APIRequest.any_instance.stub(:get).and_return(true)
 
       @client.get_job(id: 123).should eq(true)
     end

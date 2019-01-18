@@ -1,3 +1,3 @@
-module Skylab
+module SkylabCore
   class Error < StandardError; end
 end

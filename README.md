@@ -1,6 +1,6 @@
-# Skylab API
+# Skylab Core
 
-A Ruby client for accessing the Skylab API service.
+A Ruby client for accessing the Skylab Core service.
 
 [skylabtech.ai](http://skylabtech.ai)
 
