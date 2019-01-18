@@ -28,7 +28,7 @@ Create a new instance of the client using your API key.
 require 'rubygems'
 require 'skylab_core_client'
 
-client = SkylabCoreClient::Client.new(api_key: 'YOUR API KEY', debug: true)
+client = SkylabCore::Client.new(api_key: 'YOUR API KEY', debug: true)
 ```
 
 ### Rails
@@ -37,7 +37,7 @@ For a Rails app, create `skylab_core_client.rb` in `/config/initializers/`
 with the following:
 
 ```ruby
-SkylabCoreClient::Client.configure do |config|
+SkylabCore::Client.configure do |config|
   config.api_key = 'YOUR API KEY'
   config.debug = true
 end
@@ -47,7 +47,7 @@ In your application code where you want to access Skylab API:
 
 ```ruby
 begin
-  result = SkylabCoreClient::Client.new.create_job('{}', '/input', '/output')
+  result = SkylabCore::Client.new.create_job('{}', '/input', '/output')
   puts result
 rescue => e
   puts "Error - #{e.class.name}: #{e.message}"
@@ -198,11 +198,11 @@ client.delete_photo(id: 123)
 The following errors may be generated:
 
 ```ruby
-SkylabCoreClient::ClientInvalidEndpoint - the target URI is probably incorrect
-SkylabCoreClient::ClientInvalidKey - the skylab client API key is invalid
-SkylabCoreClient::ClientBadRequest - the API request is invalid
-SkylabCoreClient::ClientConnectionRefused - the target URI is probably incorrect
-SkylabCoreClient::ClientUnknownError - an unhandled HTTP error occurred
+SkylabCore::ClientInvalidEndpoint - the target URI is probably incorrect
+SkylabCore::ClientInvalidKey - the skylab client API key is invalid
+SkylabCore::ClientBadRequest - the API request is invalid
+SkylabCore::ClientConnectionRefused - the target URI is probably incorrect
+SkylabCore::ClientUnknownError - an unhandled HTTP error occurred
 ```
 
 ## Running tests
@@ -228,7 +228,7 @@ gets sent to Skylab API. You will most likely find this information in your logs
 To enable it, simply put `debug: true` as a parameter when instantiating the API object.
 
 ```ruby
-client = SkylabCoreClient::Client.new(api_key: 'YOUR API KEY', debug: true)
+client = SkylabCore::Client.new(api_key: 'YOUR API KEY', debug: true)
 ```
 
 ### Response Ranges
