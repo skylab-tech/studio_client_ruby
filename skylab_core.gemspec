@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'skylab/version'
 
 Gem::Specification.new do |gem|
-  gem.name          = 'skylab_core_client'
+  gem.name          = 'skylab_core'
   gem.version       = Skylab::VERSION
   gem.platform      = Gem::Platform::RUBY
   gem.authors       = ['Jordan Ell']
