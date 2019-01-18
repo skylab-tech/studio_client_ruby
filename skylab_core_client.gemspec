@@ -12,7 +12,7 @@ Gem::Specification.new do |gem|
   gem.email         = ['info@skylabtech.ai']
   gem.description   = 'skylabtech.ai ruby api client'
   gem.summary       = 'A HTTP client for accessing core.skylabtech.ai services.'
-  gem.homepage      = 'https://github.com/skylab-tech/core_client_ruby'
+  gem.homepage      = 'https://github.com/skylab-tech/core_client'
   gem.license       = 'Apache-2.0'
 
   gem.files         = Dir['{lib}/**/*.rb', 'bin/*']
