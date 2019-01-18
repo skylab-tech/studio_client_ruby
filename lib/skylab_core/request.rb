@@ -7,7 +7,7 @@ module SkylabCore
   class ClientInvalidKey < Error; end
   class ClientUnknownError < Error; end
 
-  class APIRequest
+  class Request
     attr_reader :response
 
     def initialize(configuration)

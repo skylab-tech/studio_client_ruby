@@ -32,7 +32,7 @@ RSpec.describe SkylabCore::Client do
 
   describe '#list_jobs' do
     it 'should return response' do
-      SkylabCore::APIRequest.any_instance.stub(:get).and_return(true)
+      SkylabCore::Request.any_instance.stub(:get).and_return(true)
 
       @client.list_jobs.should eq(true)
     end
@@ -44,7 +44,7 @@ RSpec.describe SkylabCore::Client do
     end
 
     it 'should return response' do
-      SkylabCore::APIRequest.any_instance.stub(:get).and_return(true)
+      SkylabCore::Request.any_instance.stub(:get).and_return(true)
 
       @client.get_job(id: 123).should eq(true)
     end
