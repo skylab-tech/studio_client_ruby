@@ -1,8 +1,8 @@
-# Skylab Core
+# Skylab Genesis Ruby Client
 
 A Ruby client for accessing the Skylab Genesis service.
 
-[skylabtech.ai](http://skylabtech.ai)
+[genesis.skylabtech.ai](https://genesis.skylabtech.ai)
 
 ## Installation
 
@@ -205,14 +205,6 @@ SkylabGenesis::ClientConnectionRefused - the target URI is probably incorrect
 SkylabGenesis::ClientUnknownError - an unhandled HTTP error occurred
 ```
 
-## Running tests
-
-Use rspec to run the tests:
-
-```bash
-$ rspec
-```
-
 ## Troubleshooting
 
 ### General Troubleshooting
@@ -246,10 +238,18 @@ If you're receiving an error in the 400 response range follow these steps:
 -   Log and check the body of the response
 
 
-## Internal
+## Build
 
 Build gem with
 
 ```bash
 gem build skylab_genesis.gemspec
+```
+
+## Tests
+
+Use rspec to run the tests:
+
+```bash
+$ rspec
 ```

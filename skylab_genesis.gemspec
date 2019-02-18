@@ -10,8 +10,8 @@ Gem::Specification.new do |gem|
   gem.platform      = Gem::Platform::RUBY
   gem.authors       = ['Jordan Ell']
   gem.email         = ['info@skylabtech.ai']
-  gem.description   = 'skylabtech.ai ruby api client'
-  gem.summary       = 'A HTTP client for accessing skylabtech.ai services.'
+  gem.description   = 'genesis.skylabtech.ai ruby client'
+  gem.summary       = 'A HTTP client for accessing genesis.skylabtech.ai services.'
   gem.homepage      = 'https://github.com/skylab-tech/genesis_client_ruby'
   gem.license       = 'Apache-2.0'
 
