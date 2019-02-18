@@ -4,7 +4,7 @@ module SkylabGenesis
   class Config
     attr_accessor :settings
 
-    DEFAULT_URL = 'https://skylabtech.ai'.freeze
+    DEFAULT_URL = 'https://genesis.skylabtech.ai'.freeze
 
     def self.defaults
       source = URI.parse(DEFAULT_URL)
