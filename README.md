@@ -1,5 +1,9 @@
 # Skylab Genesis Ruby Client
 
+[![CircleCI](https://circleci.com/gh/skylab-tech/genesis_client_ruby.svg?style=svg)](https://circleci.com/gh/skylab-tech/genesis_client_ruby)
+[![Maintainability](https://api.codeclimate.com/v1/badges/cd6f30ad2b05ecf2ce86/maintainability)](https://codeclimate.com/github/skylab-tech/genesis_client_ruby/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/cd6f30ad2b05ecf2ce86/test_coverage)](https://codeclimate.com/github/skylab-tech/genesis_client_ruby/test_coverage)
+
 A Ruby client for accessing the Skylab Genesis service.
 
 [genesis.skylabtech.ai](https://genesis.skylabtech.ai)
