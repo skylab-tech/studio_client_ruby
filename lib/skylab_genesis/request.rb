@@ -58,24 +58,28 @@ module SkylabGenesis
 
       @response = http.request(request, payload)
 
+      handle_response(@response)
+    rescue Errno::ECONNREFUSED
+      raise SkylabGenesis::ClientConnectionRefused, 'The connection was refused'
+    end
+
+    def handle_response(response)
       case @response
       when Net::HTTPUnauthorized then
         raise SkylabGenesis::ClientInvalidKey, 'Invalid api key'
       when Net::HTTPForbidden then
         raise SkylabGenesis::ClientInvalidKey, 'Invalid api key'
       when Net::HTTPNotFound then
-        raise SkylabGenesis::ClientInvalidEndpoint, path
+        raise SkylabGenesis::ClientInvalidEndpoint, 'Resource not found'
       when Net::HTTPBadRequest then
-        raise SkylabGenesis::ClientBadRequest, "There was an error processing your request with payload: #{payload}"
+        raise SkylabGenesis::ClientBadRequest, 'There was an error processing your request'
       when Net::HTTPTooManyRequests then
         raise SkylabGenesis::ClientBadRequest, 'The rate limit has been met'
       when Net::HTTPSuccess
-        @response
+        response
       else
         raise SkylabGenesis::ClientUnknownError, 'An error has occurred'
       end
-    rescue Errno::ECONNREFUSED
-      raise SkylabGenesis::ClientConnectionRefused, 'The connection was refused'
     end
   end
 end

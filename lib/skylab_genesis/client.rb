@@ -26,136 +26,108 @@ module SkylabGenesis
     end
 
     def list_jobs(options = {})
-      payload = options
-
-      SkylabGenesis::Request.new(@configuration).get(:jobs, payload)
+      SkylabGenesis::Request.new(@configuration).get(:jobs, payload: options)
     end
 
     def create_job(options = {})
-      raise SkylabGenesis::ClientNilArgument, 'job cannot be nil' if options[:job].nil?
+      validate_argument_presence options, :job
 
-      payload = options
-
-      SkylabGenesis::Request.new(@configuration).post(:jobs, payload)
+      SkylabGenesis::Request.new(@configuration).post(:jobs, payload: options)
     end
 
     def get_job(options = {})
-      raise SkylabGenesis::ClientNilArgument, 'id cannot be nil' if options[:id].nil?
+      validate_argument_presence options, :id
 
-      payload = options
-
-      SkylabGenesis::Request.new(@configuration).get("jobs/#{options[:id]}", payload)
+      SkylabGenesis::Request.new(@configuration).get("jobs/#{options[:id]}", payload: options)
     end
 
     def update_job(options = {})
-      raise SkylabGenesis::ClientNilArgument, 'id cannot be nil' if options[:id].nil?
-      raise SkylabGenesis::ClientNilArgument, 'job cannot be nil' if options[:job].nil?
+      validate_argument_presence options, :id
+      validate_argument_presence options, :job
 
-      payload = options
-
-      SkylabGenesis::Request.new(@configuration).patch("jobs/#{options[:id]}", payload)
+      SkylabGenesis::Request.new(@configuration).patch("jobs/#{options[:id]}", payload: options)
     end
 
     def delete_job(options = {})
-      raise SkylabGenesis::ClientNilArgument, 'id cannot be nil' if options[:id].nil?
+      validate_argument_presence options, :id
 
-      payload = options
-
-      SkylabGenesis::Request.new(@configuration).delete("jobs/#{options[:id]}", payload)
+      SkylabGenesis::Request.new(@configuration).delete("jobs/#{options[:id]}")
     end
 
     def process_job(options = {})
-      raise SkylabGenesis::ClientNilArgument, 'id cannot be nil' if options[:id].nil?
+      validate_argument_presence options, :id
 
-      payload = options
-
-      SkylabGenesis::Request.new(@configuration).post("jobs/#{options[:id]}/process", payload)
+      SkylabGenesis::Request.new(@configuration).post("jobs/#{options[:id]}/process", payload: options)
     end
 
     def cancel_job(options = {})
-      raise SkylabGenesis::ClientNilArgument, 'id cannot be nil' if options[:id].nil?
+      validate_argument_presence options, :id
 
-      payload = options
-
-      SkylabGenesis::Request.new(@configuration).post("jobs/#{options[:id]}/cancel", payload)
+      SkylabGenesis::Request.new(@configuration).post("jobs/#{options[:id]}/cancel", payload: options)
     end
 
     def list_profiles(options = {})
-      payload = options
-
-      SkylabGenesis::Request.new(@configuration).get(:profiles, payload)
+      SkylabGenesis::Request.new(@configuration).get(:profiles, payload: options)
     end
 
     def create_profile(options = {})
-      raise SkylabGenesis::ClientNilArgument, 'profile cannot be nil' if options[:profile].nil?
+      validate_argument_presence options, :profile
 
-      payload = options
-
-      SkylabGenesis::Request.new(@configuration).post(:profiles, payload)
+      SkylabGenesis::Request.new(@configuration).post(:profiles, payload: options)
     end
 
     def get_profile(options = {})
-      raise SkylabGenesis::ClientNilArgument, 'id cannot be nil' if options[:id].nil?
+      validate_argument_presence options, :id
 
-      payload = options
-
-      SkylabGenesis::Request.new(@configuration).get("profiles/#{options[:id]}", payload)
+      SkylabGenesis::Request.new(@configuration).get("profiles/#{options[:id]}", payload: options)
     end
 
     def update_profile(options = {})
-      raise SkylabGenesis::ClientNilArgument, 'id cannot be nil' if options[:id].nil?
-      raise SkylabGenesis::ClientNilArgument, 'profile cannot be nil' if options[:profile].nil?
+      validate_argument_presence options, :id
+      validate_argument_presence options, :profile
 
-      payload = options
-
-      SkylabGenesis::Request.new(@configuration).patch("profiles/#{options[:id]}", payload)
+      SkylabGenesis::Request.new(@configuration).patch("profiles/#{options[:id]}", payload: options)
     end
 
     def delete_profile(options = {})
-      raise SkylabGenesis::ClientNilArgument, 'id cannot be nil' if options[:id].nil?
+      validate_argument_presence options, :id
 
-      payload = options
-
-      SkylabGenesis::Request.new(@configuration).delete("profiles/#{options[:id]}", payload)
+      SkylabGenesis::Request.new(@configuration).delete("profiles/#{options[:id]}")
     end
 
     def list_photos(options = {})
-      payload = options
-
-      SkylabGenesis::Request.new(@configuration).get(:photos, payload)
+      SkylabGenesis::Request.new(@configuration).get(:photos, payload: options)
     end
 
     def create_photo(options = {})
-      raise SkylabGenesis::ClientNilArgument, 'photo cannot be nil' if options[:photo].nil?
+      validate_argument_presence options, :photo
 
-      payload = options
-
-      SkylabGenesis::Request.new(@configuration).post(:photos, payload)
+      SkylabGenesis::Request.new(@configuration).post(:photos, payload: options)
     end
 
     def get_photo(options = {})
-      raise SkylabGenesis::ClientNilArgument, 'id cannot be nil' if options[:id].nil?
+      validate_argument_presence options, :id
 
-      payload = options
-
-      SkylabGenesis::Request.new(@configuration).get("photos/#{options[:id]}", payload)
+      SkylabGenesis::Request.new(@configuration).get("photos/#{options[:id]}", payload: options)
     end
 
     def update_photo(options = {})
-      raise SkylabGenesis::ClientNilArgument, 'id cannot be nil' if options[:id].nil?
-      raise SkylabGenesis::ClientNilArgument, 'photo cannot be nil' if options[:photo].nil?
+      validate_argument_presence options, :id
+      validate_argument_presence options, :photo
 
-      payload = options
-
-      SkylabGenesis::Request.new(@configuration).patch("photos/#{options[:id]}", payload)
+      SkylabGenesis::Request.new(@configuration).patch("photos/#{options[:id]}", payload: options)
     end
 
     def delete_photo(options = {})
-      raise SkylabGenesis::ClientNilArgument, 'id cannot be nil' if options[:id].nil?
+      validate_argument_presence options, :id
 
-      payload = options
+      SkylabGenesis::Request.new(@configuration).delete("photos/#{options[:id]}")
+    end
 
-      SkylabGenesis::Request.new(@configuration).delete("photos/#{options[:id]}", payload)
+    private
+
+    def validate_argument_presence(options, key)
+      raise SkylabGenesis::ClientNilArgument, "#{key} cannot be nil" if options[key].nil?
     end
   end
 end

@@ -16,6 +16,7 @@ RSpec.describe SkylabGenesis::Config do
   it { should respond_to(:protocol) }
   it { should respond_to(:url) }
 
+  # Class methods
   describe '#defaults' do
     it 'return the proper default config' do
       SkylabGenesis::Config.defaults.empty?.should eq(false)
@@ -26,6 +27,25 @@ RSpec.describe SkylabGenesis::Config do
   describe '#initialize' do
     it 'return override default config' do
       SkylabGenesis::Config.new(protocol: 'proto').protocol.should eq('proto')
+    end
+  end
+
+  # Instance methods
+  describe '#method_missing' do
+    it 'should allow the assignment of a config key' do
+      expect { @config.url = 'http://google.com' }.to_not raise_error
+    end
+
+    it 'should allow the fetch of a config key' do
+      expect { @config.url }.to_not raise_error
+    end
+
+    it 'should raise error on missing method' do
+      expect { @config.bad }.to raise_error(StandardError)
+    end
+
+    it 'should raise error on missing method assignment' do
+      expect { @config.bad = '123' }.to raise_error(StandardError)
     end
   end
 end

@@ -31,6 +31,7 @@ module SkylabGenesis
       if meth_str.include?('=')
         # If this is a write attempt, see if we can write to that key
         meth_sym = meth_str.delete('=').to_sym
+
         has?(meth_sym) ? @settings[meth_sym] = args[0] : super
       else
         # It's a read attempt, see if that key exists

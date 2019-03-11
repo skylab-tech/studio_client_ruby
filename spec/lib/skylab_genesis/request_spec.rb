@@ -17,10 +17,10 @@ RSpec.describe SkylabGenesis::Request do
       @request.post(:jobs, {}).should be_instance_of(Net::HTTPSuccess)
     end
 
-    it 'should raise error on 404' do
-      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPNotFound.new(1.0, 404, 'Error'))
+    it 'should raise error on 401' do
+      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPUnauthorized.new(1.0, 401, 'Error'))
 
-      expect { @request.post(:jobs, {}) }.to raise_error(SkylabGenesis::ClientInvalidEndpoint)
+      expect { @request.post(:jobs, {}) }.to raise_error(SkylabGenesis::ClientInvalidKey)
     end
 
     it 'should raise error on 403' do
@@ -29,8 +29,20 @@ RSpec.describe SkylabGenesis::Request do
       expect { @request.post(:jobs, {}) }.to raise_error(SkylabGenesis::ClientInvalidKey)
     end
 
+    it 'should raise error on 404' do
+      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPNotFound.new(1.0, 404, 'Error'))
+
+      expect { @request.post(:jobs, {}) }.to raise_error(SkylabGenesis::ClientInvalidEndpoint)
+    end
+
     it 'should raise error on 422' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPBadRequest.new(1.0, 422, 'Error'))
+
+      expect { @request.post(:jobs, {}) }.to raise_error(SkylabGenesis::ClientBadRequest)
+    end
+
+    it 'should raise error on 429' do
+      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPTooManyRequests.new(1.0, 429, 'Error'))
 
       expect { @request.post(:jobs, {}) }.to raise_error(SkylabGenesis::ClientBadRequest)
     end
@@ -39,6 +51,12 @@ RSpec.describe SkylabGenesis::Request do
       Net::HTTP.any_instance.stub(:request).and_return(false)
 
       expect { @request.post(:jobs, {}) }.to raise_error(SkylabGenesis::ClientUnknownError)
+    end
+
+    it 'should raise error on connection refused' do
+      Net::HTTP.any_instance.stub(:request).and_raise(Errno::ECONNREFUSED)
+
+      expect { @request.post(:jobs, {}) }.to raise_error(SkylabGenesis::ClientConnectionRefused)
     end
   end
 
@@ -49,10 +67,10 @@ RSpec.describe SkylabGenesis::Request do
       @request.get(:jobs, {}).should be_instance_of(Net::HTTPSuccess)
     end
 
-    it 'should raise error on 404' do
-      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPNotFound.new(1.0, 404, 'Error'))
+    it 'should raise error on 401' do
+      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPUnauthorized.new(1.0, 401, 'Error'))
 
-      expect { @request.get(:jobs, {}) }.to raise_error(SkylabGenesis::ClientInvalidEndpoint)
+      expect { @request.get(:jobs, {}) }.to raise_error(SkylabGenesis::ClientInvalidKey)
     end
 
     it 'should raise error on 403' do
@@ -61,8 +79,20 @@ RSpec.describe SkylabGenesis::Request do
       expect { @request.get(:jobs, {}) }.to raise_error(SkylabGenesis::ClientInvalidKey)
     end
 
+    it 'should raise error on 404' do
+      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPNotFound.new(1.0, 404, 'Error'))
+
+      expect { @request.get(:jobs, {}) }.to raise_error(SkylabGenesis::ClientInvalidEndpoint)
+    end
+
     it 'should raise error on 422' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPBadRequest.new(1.0, 422, 'Error'))
+
+      expect { @request.get(:jobs, {}) }.to raise_error(SkylabGenesis::ClientBadRequest)
+    end
+
+    it 'should raise error on 429' do
+      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPTooManyRequests.new(1.0, 429, 'Error'))
 
       expect { @request.get(:jobs, {}) }.to raise_error(SkylabGenesis::ClientBadRequest)
     end
@@ -71,6 +101,12 @@ RSpec.describe SkylabGenesis::Request do
       Net::HTTP.any_instance.stub(:request).and_return(false)
 
       expect { @request.get(:jobs, {}) }.to raise_error(SkylabGenesis::ClientUnknownError)
+    end
+
+    it 'should raise error on connection refused' do
+      Net::HTTP.any_instance.stub(:request).and_raise(Errno::ECONNREFUSED)
+
+      expect { @request.get(:jobs, {}) }.to raise_error(SkylabGenesis::ClientConnectionRefused)
     end
   end
 
@@ -81,10 +117,10 @@ RSpec.describe SkylabGenesis::Request do
       @request.delete(:jobs).should be_instance_of(Net::HTTPSuccess)
     end
 
-    it 'should raise error on 404' do
-      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPNotFound.new(1.0, 404, 'Error'))
+    it 'should raise error on 401' do
+      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPUnauthorized.new(1.0, 401, 'Error'))
 
-      expect { @request.delete(:jobs) }.to raise_error(SkylabGenesis::ClientInvalidEndpoint)
+      expect { @request.delete(:jobs) }.to raise_error(SkylabGenesis::ClientInvalidKey)
     end
 
     it 'should raise error on 403' do
@@ -93,8 +129,20 @@ RSpec.describe SkylabGenesis::Request do
       expect { @request.delete(:jobs) }.to raise_error(SkylabGenesis::ClientInvalidKey)
     end
 
+    it 'should raise error on 404' do
+      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPNotFound.new(1.0, 404, 'Error'))
+
+      expect { @request.delete(:jobs) }.to raise_error(SkylabGenesis::ClientInvalidEndpoint)
+    end
+
     it 'should raise error on 422' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPBadRequest.new(1.0, 422, 'Error'))
+
+      expect { @request.delete(:jobs) }.to raise_error(SkylabGenesis::ClientBadRequest)
+    end
+
+    it 'should raise error on 429' do
+      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPTooManyRequests.new(1.0, 429, 'Error'))
 
       expect { @request.delete(:jobs) }.to raise_error(SkylabGenesis::ClientBadRequest)
     end
@@ -103,6 +151,12 @@ RSpec.describe SkylabGenesis::Request do
       Net::HTTP.any_instance.stub(:request).and_return(false)
 
       expect { @request.delete(:jobs) }.to raise_error(SkylabGenesis::ClientUnknownError)
+    end
+
+    it 'should raise error on connection refused' do
+      Net::HTTP.any_instance.stub(:request).and_raise(Errno::ECONNREFUSED)
+
+      expect { @request.delete(:jobs) }.to raise_error(SkylabGenesis::ClientConnectionRefused)
     end
   end
 
@@ -113,10 +167,10 @@ RSpec.describe SkylabGenesis::Request do
       @request.put(:jobs, {}).should be_instance_of(Net::HTTPSuccess)
     end
 
-    it 'should raise error on 404' do
-      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPNotFound.new(1.0, 404, 'Error'))
+    it 'should raise error on 401' do
+      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPUnauthorized.new(1.0, 401, 'Error'))
 
-      expect { @request.put(:jobs, {}) }.to raise_error(SkylabGenesis::ClientInvalidEndpoint)
+      expect { @request.put(:jobs, {}) }.to raise_error(SkylabGenesis::ClientInvalidKey)
     end
 
     it 'should raise error on 403' do
@@ -125,8 +179,20 @@ RSpec.describe SkylabGenesis::Request do
       expect { @request.put(:jobs, {}) }.to raise_error(SkylabGenesis::ClientInvalidKey)
     end
 
+    it 'should raise error on 404' do
+      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPNotFound.new(1.0, 404, 'Error'))
+
+      expect { @request.put(:jobs, {}) }.to raise_error(SkylabGenesis::ClientInvalidEndpoint)
+    end
+
     it 'should raise error on 422' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPBadRequest.new(1.0, 422, 'Error'))
+
+      expect { @request.put(:jobs, {}) }.to raise_error(SkylabGenesis::ClientBadRequest)
+    end
+
+    it 'should raise error on 429' do
+      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPTooManyRequests.new(1.0, 429, 'Error'))
 
       expect { @request.put(:jobs, {}) }.to raise_error(SkylabGenesis::ClientBadRequest)
     end
@@ -135,6 +201,12 @@ RSpec.describe SkylabGenesis::Request do
       Net::HTTP.any_instance.stub(:request).and_return(false)
 
       expect { @request.put(:jobs, {}) }.to raise_error(SkylabGenesis::ClientUnknownError)
+    end
+
+    it 'should raise error on connection refused' do
+      Net::HTTP.any_instance.stub(:request).and_raise(Errno::ECONNREFUSED)
+
+      expect { @request.put(:jobs, {}) }.to raise_error(SkylabGenesis::ClientConnectionRefused)
     end
   end
 
@@ -145,10 +217,10 @@ RSpec.describe SkylabGenesis::Request do
       @request.patch(:jobs, {}).should be_instance_of(Net::HTTPSuccess)
     end
 
-    it 'should raise error on 404' do
-      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPNotFound.new(1.0, 404, 'Error'))
+    it 'should raise error on 401' do
+      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPUnauthorized.new(1.0, 401, 'Error'))
 
-      expect { @request.patch(:jobs, {}) }.to raise_error(SkylabGenesis::ClientInvalidEndpoint)
+      expect { @request.patch(:jobs, {}) }.to raise_error(SkylabGenesis::ClientInvalidKey)
     end
 
     it 'should raise error on 403' do
@@ -157,8 +229,20 @@ RSpec.describe SkylabGenesis::Request do
       expect { @request.patch(:jobs, {}) }.to raise_error(SkylabGenesis::ClientInvalidKey)
     end
 
+    it 'should raise error on 404' do
+      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPNotFound.new(1.0, 404, 'Error'))
+
+      expect { @request.patch(:jobs, {}) }.to raise_error(SkylabGenesis::ClientInvalidEndpoint)
+    end
+
     it 'should raise error on 422' do
       Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPBadRequest.new(1.0, 422, 'Error'))
+
+      expect { @request.patch(:jobs, {}) }.to raise_error(SkylabGenesis::ClientBadRequest)
+    end
+
+    it 'should raise error on 429' do
+      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPTooManyRequests.new(1.0, 429, 'Error'))
 
       expect { @request.patch(:jobs, {}) }.to raise_error(SkylabGenesis::ClientBadRequest)
     end
@@ -167,6 +251,12 @@ RSpec.describe SkylabGenesis::Request do
       Net::HTTP.any_instance.stub(:request).and_return(false)
 
       expect { @request.patch(:jobs, {}) }.to raise_error(SkylabGenesis::ClientUnknownError)
+    end
+
+    it 'should raise error on connection refused' do
+      Net::HTTP.any_instance.stub(:request).and_raise(Errno::ECONNREFUSED)
+
+      expect { @request.patch(:jobs, {}) }.to raise_error(SkylabGenesis::ClientConnectionRefused)
     end
   end
 end
