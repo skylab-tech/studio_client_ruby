@@ -8,8 +8,6 @@ A Ruby client for accessing the Skylab Genesis service.
 
 [genesis.skylabtech.ai](https://genesis.skylabtech.ai)
 
-[![CircleCI](https://circleci.com/gh/skylab-tech/genesis_client_ruby.svg?style=svg)](https://circleci.com/gh/skylab-tech/genesis_client_ruby)
-
 ## Installation
 
 ```bash
