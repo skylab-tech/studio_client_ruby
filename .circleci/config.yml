@@ -14,7 +14,7 @@ jobs:
 
       # Download CodeClimate reporter
       - run:
-          name:  Download cc-test-reporter
+          name: Download cc-test-reporter
           command: |
             mkdir -p tmp/
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./tmp/cc-test-reporter
@@ -30,8 +30,8 @@ jobs:
       # Restore bundle cache
       - restore_cache:
           keys:
-            - skylab-genesis-client-ruby-bundle-v2-{{ checksum "Gemfile.lock" }}
-            - skylab-genesis-client-ruby-bundle-v2-
+            - skylab-studio-client-ruby-bundle-v2-{{ checksum "Gemfile.lock" }}
+            - skylab-studio-client-ruby-bundle-v2-
 
       - run:
           name: Install bundler gem
@@ -45,7 +45,7 @@ jobs:
       - save_cache:
           paths:
             - ./vendor/bundle
-          key: skylab-genesis-client-ruby-bundle-v2-{{ checksum "Gemfile.lock" }}
+          key: skylab-studio-client-ruby-bundle-v2-{{ checksum "Gemfile.lock" }}
 
       # Lint
       - run:
@@ -60,7 +60,6 @@ jobs:
             TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)"
             bundle exec rspec $TEST_FILES
             ./tmp/cc-test-reporter format-coverage -t simplecov -o tmp/codeclimate.unit.json coverage/.resultset.json
-
 
       # Upload results to CodeClimate
       - attach_workspace:

@@ -1,6 +1,6 @@
 require_relative 'error'
 
-module SkylabGenesis
+module SkylabStudio
   class ClientInvalidEndpoint < Error; end
   class ClientConnectionRefused < Error; end
   class ClientBadRequest < Error; end
@@ -60,25 +60,25 @@ module SkylabGenesis
 
       handle_response(@response)
     rescue Errno::ECONNREFUSED
-      raise SkylabGenesis::ClientConnectionRefused, 'The connection was refused'
+      raise SkylabStudio::ClientConnectionRefused, 'The connection was refused'
     end
 
     def handle_response(response)
       case @response
       when Net::HTTPUnauthorized then
-        raise SkylabGenesis::ClientInvalidKey, 'Invalid api key'
+        raise SkylabStudio::ClientInvalidKey, 'Invalid api key'
       when Net::HTTPForbidden then
-        raise SkylabGenesis::ClientInvalidKey, 'Invalid api key'
+        raise SkylabStudio::ClientInvalidKey, 'Invalid api key'
       when Net::HTTPNotFound then
-        raise SkylabGenesis::ClientInvalidEndpoint, 'Resource not found'
+        raise SkylabStudio::ClientInvalidEndpoint, 'Resource not found'
       when Net::HTTPBadRequest then
-        raise SkylabGenesis::ClientBadRequest, 'There was an error processing your request'
+        raise SkylabStudio::ClientBadRequest, 'There was an error processing your request'
       when Net::HTTPTooManyRequests then
-        raise SkylabGenesis::ClientBadRequest, 'The rate limit has been met'
+        raise SkylabStudio::ClientBadRequest, 'The rate limit has been met'
       when Net::HTTPSuccess
         response
       else
-        raise SkylabGenesis::ClientUnknownError, 'An error has occurred'
+        raise SkylabStudio::ClientUnknownError, 'An error has occurred'
       end
     end
   end

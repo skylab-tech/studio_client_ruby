@@ -1,10 +1,10 @@
 require_relative 'version'
 
-module SkylabGenesis
+module SkylabStudio
   class Config
     attr_accessor :settings
 
-    DEFAULT_URL = 'https://genesis.skylabtech.ai'.freeze
+    DEFAULT_URL = 'https://studio.skylabtech.ai'.freeze
 
     def self.defaults
       source = URI.parse(DEFAULT_URL)
@@ -22,7 +22,7 @@ module SkylabGenesis
     end
 
     def initialize(options = {})
-      @settings = SkylabGenesis::Config.defaults.merge(options)
+      @settings = SkylabStudio::Config.defaults.merge(options)
     end
 
     def method_missing(meth, *args, &block)
