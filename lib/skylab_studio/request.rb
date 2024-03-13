@@ -78,7 +78,7 @@ module SkylabStudio
       when Net::HTTPTooManyRequests
         raise SkylabStudio::ClientBadRequest, 'The rate limit has been met'
       when Net::HTTPSuccess
-        response
+        JSON.parse(response.body)
       else
         raise SkylabStudio::ClientUnknownError, 'An error has occurred'
       end
