@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
 # Specify your gem's dependencies in skylab_client.gemspec
@@ -8,11 +10,14 @@ group :test do
   gem 'rubocop'
 
   # Rspec for testing
-  gem 'rspec', '~> 3.8.0'
+  gem 'rspec', '~> 3.12.0'
 
   # Use for should matchers
-  gem 'shoulda-matchers', '3.1.2'
+  gem 'shoulda-matchers', '~> 6.1.0'
 
   # Use for code coverage on tests
-  gem 'simplecov', '~> 0.16.1'
+  gem 'simplecov', '~> 0.22.0'
+
+  # Use for mocking external requests
+  gem 'webmock', '~> 3.19.1'
 end

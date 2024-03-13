@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'error'
 
 module SkylabStudio
@@ -37,7 +39,7 @@ module SkylabStudio
     private
 
     def request_path(end_point)
-      "/api/#{@configuration.api_version}/#{end_point}"
+      "/api/public/#{@configuration.api_version}/#{end_point}"
     end
 
     def use_ssl?
@@ -64,16 +66,16 @@ module SkylabStudio
     end
 
     def handle_response(response)
-      case @response
-      when Net::HTTPUnauthorized then
+      case response
+      when Net::HTTPUnauthorized
         raise SkylabStudio::ClientInvalidKey, 'Invalid api key'
-      when Net::HTTPForbidden then
+      when Net::HTTPForbidden
         raise SkylabStudio::ClientInvalidKey, 'Invalid api key'
-      when Net::HTTPNotFound then
+      when Net::HTTPNotFound
         raise SkylabStudio::ClientInvalidEndpoint, 'Resource not found'
-      when Net::HTTPBadRequest then
+      when Net::HTTPBadRequest
         raise SkylabStudio::ClientBadRequest, 'There was an error processing your request'
-      when Net::HTTPTooManyRequests then
+      when Net::HTTPTooManyRequests
         raise SkylabStudio::ClientBadRequest, 'The rate limit has been met'
       when Net::HTTPSuccess
         response

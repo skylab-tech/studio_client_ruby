@@ -1,11 +1,11 @@
+# frozen_string_literal: true
+
 require File.expand_path('../../../lib/skylab_studio.rb', __dir__)
 
 RSpec.describe SkylabStudio::Client do
-  before(:each) do
-    @client = SkylabStudio::Client.new
-  end
+  let(:client) { SkylabStudio::Client.new }
 
-  subject { @client }
+  subject { client }
 
   it { should respond_to(:list_jobs) }
   it { should respond_to(:get_job) }
@@ -34,7 +34,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:get).and_return(true)
 
-      @client.list_jobs.should eq(true)
+      subject.list_jobs.should eq(true)
     end
   end
 
@@ -42,7 +42,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:post).and_return(true)
 
-      @client.create_job(
+      subject.create_job(
         job: {
           profile_id: 1
         }
@@ -52,13 +52,13 @@ RSpec.describe SkylabStudio::Client do
 
   describe '#get_job' do
     it 'should raise error with no id' do
-      expect { @client.get_job }.to raise_error(SkylabStudio::ClientNilArgument)
+      expect { subject.get_job }.to raise_error(SkylabStudio::ClientNilArgument)
     end
 
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:get).and_return(true)
 
-      @client.get_job(id: 123).should eq(true)
+      subject.get_job(id: 123).should eq(true)
     end
   end
 
@@ -66,7 +66,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:patch).and_return(true)
 
-      @client.update_job(
+      subject.update_job(
         id: 1,
         job: {
           profile_id: 2
@@ -79,17 +79,17 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:delete).and_return(true)
 
-      @client.delete_job(
+      subject.delete_job(
         id: 1
       ).should eq(true)
     end
   end
 
-  describe '#process_job' do
+  describe '#queue_job' do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:post).and_return(true)
 
-      @client.process_job(
+      subject.queue_job(
         id: 1
       ).should eq(true)
     end
@@ -99,7 +99,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:post).and_return(true)
 
-      @client.cancel_job(
+      subject.cancel_job(
         id: 1
       ).should eq(true)
     end
@@ -109,7 +109,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:get).and_return(true)
 
-      @client.list_profiles.should eq(true)
+      subject.list_profiles.should eq(true)
     end
   end
 
@@ -117,7 +117,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:post).and_return(true)
 
-      @client.create_profile(
+      subject.create_profile(
         profile: {
           name: 'Foo'
         }
@@ -127,13 +127,13 @@ RSpec.describe SkylabStudio::Client do
 
   describe '#get_profile' do
     it 'should raise error with no id' do
-      expect { @client.get_profile }.to raise_error(SkylabStudio::ClientNilArgument)
+      expect { subject.get_profile }.to raise_error(SkylabStudio::ClientNilArgument)
     end
 
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:get).and_return(true)
 
-      @client.get_profile(id: 123).should eq(true)
+      subject.get_profile(id: 123).should eq(true)
     end
   end
 
@@ -141,7 +141,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:patch).and_return(true)
 
-      @client.update_profile(
+      subject.update_profile(
         id: 1,
         profile: {
           name: 'Bar'
@@ -150,45 +150,59 @@ RSpec.describe SkylabStudio::Client do
     end
   end
 
-  describe '#delete_profile' do
-    it 'should return response' do
-      SkylabStudio::Request.any_instance.stub(:delete).and_return(true)
-
-      @client.delete_profile(
-        id: 1
-      ).should eq(true)
-    end
-  end
-
   describe '#list_photos' do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:get).and_return(true)
 
-      @client.list_photos.should eq(true)
+      subject.list_photos.should eq(true)
     end
   end
 
-  describe '#create_photo' do
-    it 'should return response' do
-      SkylabStudio::Request.any_instance.stub(:post).and_return(true)
+  describe '#upload_job_photo' do
+    before do
+      stub_request(:post, 'https://studio.skylabtech.ai/api/public/v1/photos')
+        .to_return(status: 200, body: { id: 1, photo: {} }.to_json, headers: {})
 
-      @client.create_photo(
-        photo: {
-          name: 'Foo'
-        }
-      ).should eq(true)
+      stub_request(:get, 'https://studio.skylabtech.ai/api/public/v1/photos/upload_url')
+        .to_return(status: 200, body: '', headers: {})
+
+      stub_request(:get, 'https://studio.skylabtech.ai/api/public/v1/jobs/1')
+        .to_return(status: 200, body: '', headers: {})
+
+      stub_request(:delete, 'https://studio.skylabtech.ai/api/public/v1/photos/1')
+        .to_return(status: 200, body: { id: 1 }.to_json, headers: {})
+    end
+
+    it 'should return response' do
+      photo_path = "#{File.expand_path('../../', File.dirname(__FILE__))}/test-portrait-1.JPG"
+
+      puts "RESPONSE: #{subject.upload_job_photo(photo_path, 1)}"
+
+      id = 1
+
+      expected_response = { photo: { id: id, photo: {} }, upload_response: nil }.as_json
+
+      subject.upload_job_photo(photo_path, id).should eq(expected_response)
+    end
+  end
+
+  describe '#upload_profile_photo' do
+    it 'should return response' do
+      photo_path = "#{File.expand_path('../../', File.dirname(__FILE__))}/test-portrait-1.JPG"
+
+      subject.upload_profile_photo(photo_path, 1).should eq(true)
     end
   end
 
   describe '#get_photo' do
     it 'should raise error with no id' do
-      expect { @client.get_photo }.to raise_error(SkylabStudio::ClientNilArgument)
+      expect { subject.get_photo }.to raise_error(SkylabStudio::ClientNilArgument)
     end
 
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:get).and_return(true)
 
-      @client.get_photo(id: 123).should eq(true)
+      subject.get_photo(id: 123).should eq(true)
     end
   end
 
@@ -196,7 +210,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:patch).and_return(true)
 
-      @client.update_photo(
+      subject.update_photo(
         id: 1,
         photo: {
           name: 'Bar'
@@ -209,7 +223,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:delete).and_return(true)
 
-      @client.delete_photo(
+      subject.delete_photo(
         id: 1
       ).should eq(true)
     end

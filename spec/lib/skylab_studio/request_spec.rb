@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require File.expand_path('../../../lib/skylab_studio.rb', __dir__)
 
 RSpec.describe SkylabStudio::Request do
