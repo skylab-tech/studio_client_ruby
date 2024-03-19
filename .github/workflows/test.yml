@@ -19,7 +19,7 @@ jobs:
           ruby-version: 2.5 # Specify your Ruby version
 
       - name: Install Bundler
-        run: gem install bundler
+        run: gem install bundler -v '~> 2.0'
 
       - name: Install Dependencies
         run: bundle install
