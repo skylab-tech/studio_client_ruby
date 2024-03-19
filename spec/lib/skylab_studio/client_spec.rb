@@ -150,14 +150,6 @@ RSpec.describe SkylabStudio::Client do
     end
   end
 
-  describe '#list_photos' do
-    it 'should return response' do
-      SkylabStudio::Request.any_instance.stub(:get).and_return(true)
-
-      subject.list_photos.should eq(true)
-    end
-  end
-
   describe '#upload_job_photo' do
     before do
       stub_request(:post, 'https://studio.skylabtech.ai/api/public/v1/photos')

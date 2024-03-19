@@ -104,10 +104,6 @@ module SkylabStudio
       SkylabStudio::Request.new(@configuration).patch("profiles/#{options[:id]}", payload: options)
     end
 
-    def list_photos(options = {})
-      SkylabStudio::Request.new(@configuration).get(:photos, payload: options)
-    end
-
     def upload_job_photo(photo_path = nil, id = nil)
       validate_argument_presence nil, id
       validate_argument_presence nil, photo_path

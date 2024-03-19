@@ -155,14 +155,6 @@ client.update_profile(id: 123, profile: { profile_id: 456 })
 client.delete_profile(id: 123)
 ```
 
-### List all Photos
-
-- **page** - _integer_ - The page of results to return
-
-```ruby
-client.list_photos()
-```
-
 ### Upload Job Photo
 
 This method handles validating a photo, creating a photo object and uploading it to your job/profile's s3 bucket. If the bucket upload process fails, it retries 3 times and if failures persist, the photo object is deleted.
