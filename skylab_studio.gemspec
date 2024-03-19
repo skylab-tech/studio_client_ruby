@@ -4,7 +4,7 @@ lib = File.expand_path('lib', __dir__)
 
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-require 'skylab_studio/version'
+require_relative 'skylab_studio/version'
 
 Gem::Specification.new do |gem|
   gem.name          = 'skylab_studio'

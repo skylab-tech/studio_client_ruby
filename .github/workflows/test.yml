@@ -1,0 +1,28 @@
+name: Run RSpec
+
+on: [push]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run_rspec:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set Up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.5 # Specify your Ruby version
+
+      - name: Install Bundler
+        run: gem install bundler
+
+      - name: Install Dependencies
+        run: bundle install
+
+      - name: Run RSpec
+        run: bundle exec rspec
