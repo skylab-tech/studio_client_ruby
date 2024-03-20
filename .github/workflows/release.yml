@@ -20,7 +20,13 @@ jobs:
       - name: Set Up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.5
+          ruby-version: 2.7
+
+      - name: Install Bundler
+        run: gem install bundler -v '~>2.4.22'
+
+      - name: Install Dependencies
+        run: bundle _2.4.22_ install
 
       - name: Build Gem
         run: gem build skylab_studio.gemspec
