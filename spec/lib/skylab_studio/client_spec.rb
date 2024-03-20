@@ -163,26 +163,44 @@ RSpec.describe SkylabStudio::Client do
 
       stub_request(:delete, 'https://studio.skylabtech.ai/api/public/v1/photos/1')
         .to_return(status: 200, body: { id: 1 }.to_json, headers: {})
+
+      allow_any_instance_of(Net::HTTPSuccess).to receive(:body) { { id: 1 }.to_json }
     end
 
     it 'should return response' do
       photo_path = "#{File.expand_path('../../', File.dirname(__FILE__))}/test-portrait-1.JPG"
-
-      puts "RESPONSE: #{subject.upload_job_photo(photo_path, 1)}"
-
       id = 1
 
-      expected_response = { photo: { id: id, photo: {} }, upload_response: nil }.as_json
+      expected_response = { "id" => id }
 
       subject.upload_job_photo(photo_path, id).should eq(expected_response)
     end
   end
 
   describe '#upload_profile_photo' do
+    before do
+      stub_request(:post, 'https://studio.skylabtech.ai/api/public/v1/photos')
+        .to_return(status: 200, body: { id: 1, photo: {} }.to_json, headers: {})
+
+      stub_request(:get, 'https://studio.skylabtech.ai/api/public/v1/photos/upload_url')
+        .to_return(status: 200, body: '', headers: {})
+
+      stub_request(:get, 'https://studio.skylabtech.ai/api/public/v1/jobs/1')
+        .to_return(status: 200, body: '', headers: {})
+
+      stub_request(:delete, 'https://studio.skylabtech.ai/api/public/v1/photos/1')
+        .to_return(status: 200, body: { id: 1 }.to_json, headers: {})
+
+      allow_any_instance_of(Net::HTTPSuccess).to receive(:body) { { id: 1 }.to_json }
+    end
+
     it 'should return response' do
       photo_path = "#{File.expand_path('../../', File.dirname(__FILE__))}/test-portrait-1.JPG"
+      id = 1
 
-      subject.upload_profile_photo(photo_path, 1).should eq(true)
+      expected_response = { "id" => id }
+
+      subject.upload_profile_photo(photo_path, 1).should eq(expected_response)
     end
   end
 

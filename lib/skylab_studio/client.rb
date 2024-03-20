@@ -104,18 +104,18 @@ module SkylabStudio
       SkylabStudio::Request.new(@configuration).patch("profiles/#{options[:id]}", payload: options)
     end
 
-    def upload_job_photo(photo_path = nil, id = nil)
-      validate_argument_presence nil, id
+    def upload_job_photo(photo_path = nil, job_id = nil)
+      validate_argument_presence nil, job_id
       validate_argument_presence nil, photo_path
 
-      upload_photo(photo_path, id, 'job')
+      upload_photo(photo_path, job_id, 'job')
     end
 
-    def upload_profile_photo(photo_path = nil, id = nil)
-      validate_argument_presence options, :photo_path
-      validate_argument_presence options, :id
+    def upload_profile_photo(photo_path = nil, profile_id = nil)
+      validate_argument_presence nil, :photo_path
+      validate_argument_presence nil, :profile_id
 
-      upload_photo(photo_path, id, 'profile')
+      upload_photo(photo_path, profile_id, 'profile')
     end
 
     def get_photo(options = {})
@@ -185,19 +185,13 @@ module SkylabStudio
       end
 
       # Ask studio to create the photo record
-      photo_resp = create_photo(photo_data)
-      photo_resp_body = photo_resp&.body
+      photo_response_json = create_photo(photo_data)
 
-      unless photo_resp_body
+      unless photo_response_json
         raise 'Unable to create the photo object, if creating profile photo, ensure enable_extract and replace_background is set to: True'
       end
 
-      photo_resp_body = JSON.parse photo_resp_body
-
-      puts "photo_resp_body: #{photo_resp_body}"
-
-      photo_id = photo_resp_body['id']
-      res['photo'] = photo_resp_body
+      photo_id = photo_response_json['id']
 
       puts "photo id top: #{photo_id}"
 
@@ -237,11 +231,10 @@ module SkylabStudio
       rescue StandardError => e
         puts "An exception of type #{e.class} occurred: #{e.message}"
         puts 'Deleting created, but unuploaded photo...'
-        delete_photo({ id: photo_id })
+        delete_photo({ id: photo_id }) if photo_id
       end
-      res['upload_response'] = upload_photo_resp&.code
 
-      res
+      photo_response_json
     end
 
     def validate_argument_presence(options, key)
