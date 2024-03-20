@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.name          = 'skylab_studio'
   gem.version       = SkylabStudio::VERSION
   gem.platform      = Gem::Platform::RUBY
-  gem.required_ruby_version = '>= 2.5.0'
+  gem.required_ruby_version = '>= 2.7.0'
   gem.authors       = ['Paul Lam']
   gem.email         = ['info@skylabtech.ai']
   gem.description   = 'studio.skylabtech.ai ruby client'

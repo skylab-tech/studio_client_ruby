@@ -16,10 +16,10 @@ jobs:
       - name: Set Up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.5 # Specify your Ruby version
+          ruby-version: 2.7
 
       - name: Install Bundler
-        run: gem install bundler -v '~>2.2.34'
+        run: gem install bundler -v '~>2.4.22'
 
       - name: Install Dependencies
         run: bundle install
