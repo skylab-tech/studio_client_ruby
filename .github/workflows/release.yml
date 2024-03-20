@@ -34,4 +34,4 @@ jobs:
       - name: Publish Gem
         run: gem push skylab_studio-*.gem
         env:
-          RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+          GEM_HOST_API_KEY: ${{ secrets.GEM_HOST_API_KEY }}
