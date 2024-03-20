@@ -23,5 +23,5 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
 
   gem.add_development_dependency 'rspec', '~> 3.12.0'
-  gem.add_development_dependency 'shoulda-matchers', '~> 6.1.0'
+  gem.add_development_dependency 'shoulda-matchers', '~> 5.3.0'
 end

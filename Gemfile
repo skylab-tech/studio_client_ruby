@@ -13,7 +13,7 @@ group :test do
   gem 'rspec', '~> 3.12.0'
 
   # Use for should matchers
-  gem 'shoulda-matchers', '~> 6.1.0'
+  gem 'shoulda-matchers', '~> 5.3.0'
 
   # Use for code coverage on tests
   gem 'simplecov', '~> 0.22.0'
