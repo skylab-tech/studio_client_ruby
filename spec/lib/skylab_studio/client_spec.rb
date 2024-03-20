@@ -42,11 +42,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:post).and_return(true)
 
-      subject.create_job(
-        job: {
-          profile_id: 1
-        }
-      ).should eq(true)
+      subject.create_job({ name: 'test-job', profile_id: 1 }).should eq(true)
     end
   end
 
@@ -118,7 +114,7 @@ RSpec.describe SkylabStudio::Client do
       SkylabStudio::Request.any_instance.stub(:post).and_return(true)
 
       subject.create_profile(
-        profile: {
+        {
           name: 'Foo'
         }
       ).should eq(true)

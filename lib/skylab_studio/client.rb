@@ -31,42 +31,43 @@ module SkylabStudio
     end
 
     def list_jobs(options = {})
-      SkylabStudio::Request.new(@configuration).get(:jobs, payload: options)
+      SkylabStudio::Request.new(@configuration).get(:jobs, options)
     end
 
     def create_job(options = {})
-      validate_argument_presence options, :job
+      validate_argument_presence options, :name
+      validate_argument_presence options, :profile_id
 
-      SkylabStudio::Request.new(@configuration).post(:jobs, payload: options)
+      SkylabStudio::Request.new(@configuration).post(:jobs, options)
     end
 
     def get_job(options = {})
       validate_argument_presence options, :id
 
-      SkylabStudio::Request.new(@configuration).get("jobs/#{options[:id]}", payload: options)
+      SkylabStudio::Request.new(@configuration).get("jobs/#{options[:id]}", options)
     end
 
     def get_job_by_name(options = {})
       validate_argument_presence options, :name
 
-      SkylabStudio::Request.new(@configuration).get('jobs/find_by_name', payload: options)
+      SkylabStudio::Request.new(@configuration).get('jobs/find_by_name', options)
     end
 
     def update_job(options = {})
       validate_argument_presence options, :id
       validate_argument_presence options, :job
 
-      SkylabStudio::Request.new(@configuration).patch("jobs/#{options[:id]}", payload: options)
+      SkylabStudio::Request.new(@configuration).patch("jobs/#{options[:id]}", options)
     end
 
     def queue_job(options = {})
       validate_argument_presence options, :id
 
-      SkylabStudio::Request.new(@configuration).post("jobs/#{options[:id]}/queue", payload: options)
+      SkylabStudio::Request.new(@configuration).post("jobs/#{options[:id]}/queue", options)
     end
 
     def fetch_jobs_in_front(options = {})
-      SkylabStudio::Request.new(@configuration).get("jobs/#{options[:id]}/jobs_in_front", payload: options)
+      SkylabStudio::Request.new(@configuration).get("jobs/#{options[:id]}/jobs_in_front", options)
     end
 
     def delete_job(options = {})
@@ -78,30 +79,30 @@ module SkylabStudio
     def cancel_job(options = {})
       validate_argument_presence options, :id
 
-      SkylabStudio::Request.new(@configuration).post("jobs/#{options[:id]}/cancel", payload: options)
+      SkylabStudio::Request.new(@configuration).post("jobs/#{options[:id]}/cancel", options)
     end
 
     def list_profiles(options = {})
-      SkylabStudio::Request.new(@configuration).get(:profiles, payload: options)
+      SkylabStudio::Request.new(@configuration).get(:profiles, options)
     end
 
     def create_profile(options = {})
-      validate_argument_presence options, :profile
+      validate_argument_presence options, :name
 
-      SkylabStudio::Request.new(@configuration).post(:profiles, payload: options)
+      SkylabStudio::Request.new(@configuration).post(:profiles, options)
     end
 
     def get_profile(options = {})
       validate_argument_presence options, :id
 
-      SkylabStudio::Request.new(@configuration).get("profiles/#{options[:id]}", payload: options)
+      SkylabStudio::Request.new(@configuration).get("profiles/#{options[:id]}", options)
     end
 
     def update_profile(options = {})
       validate_argument_presence options, :id
       validate_argument_presence options, :profile
 
-      SkylabStudio::Request.new(@configuration).patch("profiles/#{options[:id]}", payload: options)
+      SkylabStudio::Request.new(@configuration).patch("profiles/#{options[:id]}", options)
     end
 
     def upload_job_photo(photo_path = nil, job_id = nil)
@@ -121,7 +122,7 @@ module SkylabStudio
     def get_photo(options = {})
       validate_argument_presence options, :id
 
-      SkylabStudio::Request.new(@configuration).get("photos/#{options[:id]}", payload: options)
+      SkylabStudio::Request.new(@configuration).get("photos/#{options[:id]}", options)
     end
 
     def get_job_photos(job_identifier, value)
@@ -129,14 +130,14 @@ module SkylabStudio
         "job_#{job_identifier}".to_sym => value
       }
 
-      SkylabStudio::Request.new(@configuration).get('phtos/list_for_job', payload: options)
+      SkylabStudio::Request.new(@configuration).get('phtos/list_for_job', options)
     end
 
     def update_photo(options = {})
       validate_argument_presence options, :id
       validate_argument_presence options, :photo
 
-      SkylabStudio::Request.new(@configuration).patch("photos/#{options[:id]}", payload: options)
+      SkylabStudio::Request.new(@configuration).patch("photos/#{options[:id]}", options)
     end
 
     def delete_photo(options = {})
@@ -148,11 +149,11 @@ module SkylabStudio
     private
 
     def get_upload_url(options = { use_cache_upload: false })
-      SkylabStudio::Request.new(@configuration).get('photos/upload_url', payload: options)
+      SkylabStudio::Request.new(@configuration).get('photos/upload_url', options)
     end
 
     def create_photo(options = {})
-      SkylabStudio::Request.new(@configuration).post(:photos, payload: options)
+      SkylabStudio::Request.new(@configuration).post(:photos, options)
     end
 
     def upload_photo(photo_path, id, model = 'job')
@@ -170,6 +171,7 @@ module SkylabStudio
       md5hash = ''
 
       # Read file contents to binary
+      data = nil
       File.open(photo_path, 'rb') do |file|
         data = file.read
         md5hash = Digest::MD5.hexdigest(data)
@@ -193,8 +195,6 @@ module SkylabStudio
 
       photo_id = photo_response_json['id']
 
-      puts "photo id top: #{photo_id}"
-
       b64md5 = Base64.strict_encode64([md5hash].pack('H*'))
       payload = {
         'use_cache_upload' => false,
@@ -210,14 +210,18 @@ module SkylabStudio
       headers['Content-MD5'] = b64md5
 
       begin
-        upload_photo_resp = Net::HTTP.put(URI(upload_url), data, headers)
+        uri = URI(upload_url)
+        request = Net::HTTP::Put.new(uri, headers)
+        request.body = data
+        upload_photo_resp = Net::HTTP.start(uri.hostname) {|http| http.request(request) }
+
         unless upload_photo_resp
           puts 'First upload attempt failed, retrying...'
           retry_count = 0
           # Retry upload
 
           while retry_count < 3
-            upload_photo_resp = Net::HTTP.put(URI(upload_url), data, headers)
+            upload_photo_resp = Net::HTTP.start(uri.hostname) {|http| http.request(request) }
             if upload_photo_resp
               break # Upload was successful, exit the loop
             elsif retry_count == 2 # Check if retry count is 2 (0-based indexing)
