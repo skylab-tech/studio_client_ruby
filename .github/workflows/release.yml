@@ -1,0 +1,31 @@
+name: 'Studio Client Ruby Gems Release'
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    name: Release Gem
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set Up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.5
+
+      - name: Build Gem
+        run: gem build skylab_studio.gemspec
+
+      - name: Publish Gem
+        run: gem push skylab_studio-*.gem
+        env:
+          RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}

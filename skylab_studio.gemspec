@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 lib = File.expand_path('lib', __dir__)
 
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
@@ -8,6 +10,7 @@ Gem::Specification.new do |gem|
   gem.name          = 'skylab_studio'
   gem.version       = SkylabStudio::VERSION
   gem.platform      = Gem::Platform::RUBY
+  gem.required_ruby_version = '>= 2.7.0'
   gem.authors       = ['Paul Lam']
   gem.email         = ['info@skylabtech.ai']
   gem.description   = 'studio.skylabtech.ai ruby client'
@@ -19,6 +22,6 @@ Gem::Specification.new do |gem|
   gem.test_files    = Dir['{spec}/**/*.rb']
   gem.require_paths = ['lib']
 
-  gem.add_development_dependency 'rspec', '~> 3.8'
-  gem.add_development_dependency 'shoulda-matchers', '3.1.2'
+  gem.add_development_dependency 'rspec', '~> 3.12.0'
+  gem.add_development_dependency 'shoulda-matchers', '~> 5.3.0'
 end

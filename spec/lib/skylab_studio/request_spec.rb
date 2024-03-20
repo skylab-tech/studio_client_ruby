@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require File.expand_path('../../../lib/skylab_studio.rb', __dir__)
 
 RSpec.describe SkylabStudio::Request do
@@ -12,9 +14,10 @@ RSpec.describe SkylabStudio::Request do
 
   describe '#post' do
     it 'should return success' do
-      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPSuccess.new(1.0, 200, 'OK'))
+      allow_any_instance_of(Net::HTTP).to receive(:request) { Net::HTTPSuccess.new(1.0, 200, 'OK') }
+      allow_any_instance_of(Net::HTTPSuccess).to receive(:body) { {}.to_json }
 
-      @request.post(:jobs, {}).should be_instance_of(Net::HTTPSuccess)
+      @request.post(:jobs, {}).should be_instance_of(Hash)
     end
 
     it 'should raise error on 401' do
@@ -62,9 +65,10 @@ RSpec.describe SkylabStudio::Request do
 
   describe '#get' do
     it 'should return success' do
-      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPSuccess.new(1.0, 200, 'OK'))
+      allow_any_instance_of(Net::HTTP).to receive(:request) { Net::HTTPSuccess.new(1.0, 200, 'OK') }
+      allow_any_instance_of(Net::HTTPSuccess).to receive(:body) { {}.to_json }
 
-      @request.get(:jobs, {}).should be_instance_of(Net::HTTPSuccess)
+      @request.get(:jobs, {}).should be_instance_of(Hash)
     end
 
     it 'should raise error on 401' do
@@ -112,9 +116,10 @@ RSpec.describe SkylabStudio::Request do
 
   describe '#delete' do
     it 'should return success' do
-      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPSuccess.new(1.0, 200, 'OK'))
+      allow_any_instance_of(Net::HTTP).to receive(:request) { Net::HTTPSuccess.new(1.0, 200, 'OK') }
+      allow_any_instance_of(Net::HTTPSuccess).to receive(:body) { {}.to_json }
 
-      @request.delete(:jobs).should be_instance_of(Net::HTTPSuccess)
+      @request.delete(:jobs).should be_instance_of(Hash)
     end
 
     it 'should raise error on 401' do
@@ -162,9 +167,10 @@ RSpec.describe SkylabStudio::Request do
 
   describe '#put' do
     it 'should return success' do
-      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPSuccess.new(1.0, 200, 'OK'))
+      allow_any_instance_of(Net::HTTP).to receive(:request) { Net::HTTPSuccess.new(1.0, 200, 'OK') }
+      allow_any_instance_of(Net::HTTPSuccess).to receive(:body) { {}.to_json }
 
-      @request.put(:jobs, {}).should be_instance_of(Net::HTTPSuccess)
+      @request.put(:jobs, {}).should be_instance_of(Hash)
     end
 
     it 'should raise error on 401' do
@@ -212,9 +218,10 @@ RSpec.describe SkylabStudio::Request do
 
   describe '#patch' do
     it 'should return success' do
-      Net::HTTP.any_instance.stub(:request).and_return(Net::HTTPSuccess.new(1.0, 200, 'OK'))
+      allow_any_instance_of(Net::HTTP).to receive(:request) { Net::HTTPSuccess.new(1.0, 200, 'OK') }
+      allow_any_instance_of(Net::HTTPSuccess).to receive(:body) { {}.to_json }
 
-      @request.patch(:jobs, {}).should be_instance_of(Net::HTTPSuccess)
+      @request.patch(:jobs, {}).should be_instance_of(Hash)
     end
 
     it 'should raise error on 401' do

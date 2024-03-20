@@ -155,12 +155,26 @@ client.update_profile(id: 123, profile: { profile_id: 456 })
 client.delete_profile(id: 123)
 ```
 
-### List all Photos
+### Upload Job Photo
 
-- **page** - _integer_ - The page of results to return
+This method handles validating a photo, creating a photo object and uploading it to your job/profile's s3 bucket. If the bucket upload process fails, it retries 3 times and if failures persist, the photo object is deleted.
+
+- **id** - _integer_ - The ID of the job to associate the image file upload to
+- **photo_path** - _string_ - The current local file path of the image file
 
 ```ruby
-client.list_photos()
+client.upload_job_photo(id: 123, photo_path: '/path/to/photo.jpg')
+```
+
+### Upload Profile Photo
+
+This function handles validating a background photo for a profile. Note: enable_extract and replace_background (profile attributes) MUST be true in order to create background photos. Follows the same upload process as upload_job_photo.
+
+- **id** - _integer_ - The ID of the profile to associate the image file upload to
+- **photo_path** - _string_ - The current local file path of the image file
+
+```ruby
+client.upload_profile_photo(id: 123, photo_path: '/path/to/photo.jpg')
 ```
 
 ### Create a Photo

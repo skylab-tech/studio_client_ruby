@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SkylabStudio
 end
 
@@ -7,7 +9,7 @@ require 'net/https'
 require 'uri'
 require 'json'
 
-require 'skylab_studio/request'
-require 'skylab_studio/client'
-require 'skylab_studio/config'
-require 'skylab_studio/version' unless defined?(Skylab::VERSION)
+require_relative 'skylab_studio/request'
+require_relative 'skylab_studio/client'
+require_relative 'skylab_studio/config'
+require_relative 'skylab_studio/version' unless defined?(Skylab::VERSION)
