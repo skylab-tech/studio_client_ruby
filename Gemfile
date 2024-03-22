@@ -2,6 +2,9 @@
 
 source 'https://rubygems.org'
 
+# Used for image processing
+gem 'ruby-vips', '~> 2.2.1'
+
 # Specify your gem's dependencies in skylab_client.gemspec
 gemspec
 
