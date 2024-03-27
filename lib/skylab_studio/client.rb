@@ -34,8 +34,8 @@ module SkylabStudio
       @configuration = SkylabStudio::Config.new(settings)
     end
 
-    def list_jobs(options = {})
-      SkylabStudio::Request.new(@configuration).get(:jobs, options)
+    def list_jobs()
+      SkylabStudio::Request.new(@configuration).get(:jobs)
     end
 
     def create_job(options = {})
@@ -57,9 +57,8 @@ module SkylabStudio
       SkylabStudio::Request.new(@configuration).get('jobs/find_by_name', options)
     end
 
-    def update_job(options = {})
-      validate_argument_presence options, :id
-      validate_argument_presence options, :job
+    def update_job(job_id, options = {})
+      validate_argument_presence options, :job_id
 
       SkylabStudio::Request.new(@configuration).patch("jobs/#{options[:id]}", options)
     end
@@ -102,11 +101,10 @@ module SkylabStudio
       SkylabStudio::Request.new(@configuration).get("profiles/#{profile_id}")
     end
 
-    def update_profile(options = {})
+    def update_profile(profile_id, options = {})
       validate_argument_presence options, :id
-      validate_argument_presence options, :profile
 
-      SkylabStudio::Request.new(@configuration).patch("profiles/#{options[:id]}", options)
+      SkylabStudio::Request.new(@configuration).patch("profiles/#{profile_id}", options)
     end
 
     def upload_job_photo(photo_path = nil, job_id = nil)
@@ -133,17 +131,10 @@ module SkylabStudio
       SkylabStudio::Request.new(@configuration).get('photos/list_for_job', { job_id: job_id })
     end
 
-    def update_photo(options = {})
-      validate_argument_presence options, :id
-      validate_argument_presence options, :photo
+    def delete_photo(photo_id)
+      validate_argument_presence nil, :photo_id
 
-      SkylabStudio::Request.new(@configuration).patch("photos/#{options[:id]}", options)
-    end
-
-    def delete_photo(job_id)
-      validate_argument_presence nil, :job_id
-
-      SkylabStudio::Request.new(@configuration).delete("photos/#{job_id}")
+      SkylabStudio::Request.new(@configuration).delete("photos/#{photo_id}")
     end
 
     def download_photo(photo_id, output_path, profile: nil, options: {})
