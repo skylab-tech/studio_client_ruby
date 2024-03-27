@@ -1,9 +1,13 @@
+# frozen_string_literal: true
+
 require_relative 'error'
 require 'fileutils'
 require 'digest'
 require 'open-uri'
 require 'base64'
 require 'net/http'
+require 'vips'
+require 'concurrent'
 
 module SkylabStudio
   class ClientNilArgument < Error; end
@@ -41,10 +45,10 @@ module SkylabStudio
       SkylabStudio::Request.new(@configuration).post(:jobs, options)
     end
 
-    def get_job(options = {})
-      validate_argument_presence options, :id
+    def get_job(job_id)
+      validate_argument_presence nil, :job_id
 
-      SkylabStudio::Request.new(@configuration).get("jobs/#{options[:id]}", options)
+      SkylabStudio::Request.new(@configuration).get("jobs/#{job_id}")
     end
 
     def get_job_by_name(options = {})
@@ -70,16 +74,16 @@ module SkylabStudio
       SkylabStudio::Request.new(@configuration).get("jobs/#{options[:id]}/jobs_in_front", options)
     end
 
-    def delete_job(options = {})
-      validate_argument_presence options, :id
+    def delete_job(job_id)
+      validate_argument_presence nil, :job_id
 
-      SkylabStudio::Request.new(@configuration).delete("jobs/#{options[:id]}")
+      SkylabStudio::Request.new(@configuration).delete("jobs/#{job_id}")
     end
 
-    def cancel_job(options = {})
-      validate_argument_presence options, :id
+    def cancel_job(job_id)
+      validate_argument_presence nil, :job_id
 
-      SkylabStudio::Request.new(@configuration).post("jobs/#{options[:id]}/cancel", options)
+      SkylabStudio::Request.new(@configuration).post("jobs/#{job_id}/cancel", nil)
     end
 
     def list_profiles(options = {})
@@ -92,10 +96,10 @@ module SkylabStudio
       SkylabStudio::Request.new(@configuration).post(:profiles, options)
     end
 
-    def get_profile(options = {})
-      validate_argument_presence options, :id
+    def get_profile(profile_id)
+      validate_argument_presence nil, :profile_id
 
-      SkylabStudio::Request.new(@configuration).get("profiles/#{options[:id]}", options)
+      SkylabStudio::Request.new(@configuration).get("profiles/#{profile_id}")
     end
 
     def update_profile(options = {})
@@ -119,18 +123,14 @@ module SkylabStudio
       upload_photo(photo_path, profile_id, 'profile')
     end
 
-    def get_photo(options = {})
-      validate_argument_presence options, :id
+    def get_photo(photo_id)
+      validate_argument_presence nil, :photo_id
 
-      SkylabStudio::Request.new(@configuration).get("photos/#{options[:id]}", options)
+      SkylabStudio::Request.new(@configuration).get("photos/#{photo_id}")
     end
 
-    def get_job_photos(job_identifier, value)
-      {
-        "job_#{job_identifier}".to_sym => value
-      }
-
-      SkylabStudio::Request.new(@configuration).get('phtos/list_for_job', options)
+    def get_job_photos(job_id)
+      SkylabStudio::Request.new(@configuration).get('photos/list_for_job', { job_id: job_id })
     end
 
     def update_photo(options = {})
@@ -140,10 +140,102 @@ module SkylabStudio
       SkylabStudio::Request.new(@configuration).patch("photos/#{options[:id]}", options)
     end
 
-    def delete_photo(options = {})
-      validate_argument_presence options, :id
+    def delete_photo(job_id)
+      validate_argument_presence nil, :job_id
 
-      SkylabStudio::Request.new(@configuration).delete("photos/#{options[:id]}")
+      SkylabStudio::Request.new(@configuration).delete("photos/#{job_id}")
+    end
+
+    def download_photo(photo_id, output_path, profile: nil, options: {})
+      file_name = ''
+
+      unless Dir.exist?(output_path)
+        # Must be a file path - separate output_path and file_name
+        file_name = File.basename(output_path)
+        output_path = File.dirname(output_path) || ''
+      end
+
+      begin
+        photo = get_photo(photo_id)
+        profile_id = photo['job']['profileId']
+
+        file_name = photo['name'] if file_name.empty?
+
+        profile ||= get_profile(profile_id)
+
+        is_extract = profile['enableExtract'].to_s == 'true'
+        replace_background = profile['replaceBackground'].to_s == 'true'
+        is_dual_file_output = profile['dualFileOutput'].to_s == 'true'
+        profile['enableStripPngMetadata'].to_s
+        bgs = options[:bgs]
+
+        # Load output image
+        image_buffer = download_image_async(photo['retouchedUrl'])
+        image = Vips::Image.new_from_buffer(image_buffer, '')
+
+        if is_extract # Output extract image
+          png_file_name = "#{File.basename(file_name, '.*')}.png"
+
+          # Dual File Output will provide an image in the format specified in the outputFileType field
+          # and an extracted image as a PNG.
+          image.write_to_file(File.join(output_path, png_file_name)) if is_dual_file_output
+
+          download_replaced_background_image(file_name, image, output_path, profile: profile, bgs: bgs) if replace_background
+
+          # Regular Extract output
+          image.write_to_file(File.join(output_path, png_file_name)) unless is_dual_file_output || replace_background
+        else # Non-extracted regular image output
+          image.write_to_file(File.join(output_path, file_name))
+        end
+
+        puts "Successfully downloaded: #{file_name}"
+        [file_name, true]
+      rescue StandardError => e
+        error_msg = "Failed to download photo id: #{photo_id} - #{e}"
+        raise error_msg if options[:return_on_error].nil?
+
+        [file_name, false]
+      end
+    end
+
+    def download_all_photos(photos_list, profile, output_path)
+      raise 'Invalid output path' unless Dir.exist?(output_path)
+
+      success_photos = []
+      errored_photos = []
+      bgs = []
+
+      begin
+        profile = get_profile(profile['id'])
+        bgs = download_bg_images(profile) if profile && profile['photos']&.any?
+
+        photo_ids = photos_list.map { |photo| photo['id'].to_s }.compact
+
+        pool = Concurrent::FixedThreadPool.new(@configuration.settings[:max_download_concurrency])
+        download_tasks = []
+        photo_options = { return_on_error: true, bgs: bgs }
+        photo_ids.each do |photo_id|
+          download_tasks << Concurrent::Future.execute(executor: pool) do
+            download_photo(photo_id.to_i, output_path, profile: profile, options: photo_options)
+          end
+        end
+
+        # Wait for all download tasks to complete
+        results = download_tasks.map(&:value)
+        results.each do |result|
+          if result[1]
+            success_photos << result[0]
+          else
+            errored_photos << result[0]
+          end
+        end
+
+        { success_photos: success_photos, errored_photos: errored_photos }
+      rescue StandardError => e
+        warn e
+
+        { success_photos: success_photos, errored_photos: errored_photos }
+      end
     end
 
     private
@@ -157,7 +249,6 @@ module SkylabStudio
     end
 
     def upload_photo(photo_path, id, model = 'job')
-      res = {}
       valid_exts_to_check = %w[.jpg .jpeg .png .webp]
 
       raise 'Invalid file type: must be of type jpg/jpeg/png/webp' unless valid_exts_to_check.any? { |ext| photo_path.downcase.end_with?(ext) }
@@ -167,6 +258,7 @@ module SkylabStudio
       raise 'Invalid file size: must be no larger than 27MB' if file_size > 27 * 1024 * 1024
 
       photo_name = File.basename(photo_path)
+      photo_ext = File.extname(photo_name)
       headers = {}
       md5hash = ''
 
@@ -178,10 +270,10 @@ module SkylabStudio
       end
 
       # model - either job or profile (job_id/profile_id)
-      photo_data = { "#{model}_id" => id, name: photo_name, 'use_cache_upload' => false }
+      photo_data = { "#{model}_id": id, name: "#{photo_name}#{photo_ext}", path: photo_path, 'use_cache_upload': false }
 
       if model == 'job'
-        job_type = get_job(id: id)['type']
+        job_type = get_job(id)['type']
 
         headers = { 'X-Amz-Tagging' => 'job=photo&api=true' } if job_type == 'regular'
       end
@@ -213,7 +305,7 @@ module SkylabStudio
         uri = URI(upload_url)
         request = Net::HTTP::Put.new(uri, headers)
         request.body = data
-        upload_photo_resp = Net::HTTP.start(uri.hostname) {|http| http.request(request) }
+        upload_photo_resp = Net::HTTP.start(uri.hostname) { |http| http.request(request) }
 
         unless upload_photo_resp
           puts 'First upload attempt failed, retrying...'
@@ -221,7 +313,7 @@ module SkylabStudio
           # Retry upload
 
           while retry_count < 3
-            upload_photo_resp = Net::HTTP.start(uri.hostname) {|http| http.request(request) }
+            upload_photo_resp = Net::HTTP.start(uri.hostname) { |http| http.request(request) }
             if upload_photo_resp
               break # Upload was successful, exit the loop
             elsif retry_count == 2 # Check if retry count is 2 (0-based indexing)
@@ -239,6 +331,70 @@ module SkylabStudio
       end
 
       photo_response_json
+    end
+
+    def download_image_async(image_url)
+      raise "Invalid retouchedUrl: \"#{image_url}\" - Please ensure the job is complete" unless image_url.start_with?('http', 'https')
+
+      begin
+        uri = URI(image_url)
+        response = Net::HTTP.get_response(uri)
+
+        if response.is_a?(Net::HTTPSuccess)
+          response.body
+
+        else
+          puts "Error downloading image: #{response.message}"
+          nil
+        end
+      rescue StandardError => e
+        puts "Error downloading image: #{e.message}"
+        nil
+      end
+    end
+
+    def download_bg_images(profile)
+      temp_bgs = []
+
+      bg_photos = profile['photos'].select { |photo| photo['jobId'].nil? }
+
+      bg_photos.each do |bg|
+        bg_buffer = download_image_async(bg['originalUrl'])
+        bg_image = Vips::Image.new_from_buffer(bg_buffer, '')
+        temp_bgs << bg_image
+      end
+
+      temp_bgs
+    end
+
+    def download_replaced_background_image(file_name, input_image, output_path, profile: nil, bgs: nil)
+      output_file_type = profile&.[]('outputFileType') || 'png'
+
+      bgs = download_bg_images(profile) if bgs.nil? && !profile.nil? && profile&.[]('photos')&.any?
+
+      alpha_channel = input_image[3]
+      rgb_channel = input_image[0..2]
+      rgb_cutout = rgb_channel.bandjoin(alpha_channel)
+
+      if bgs&.any?
+        bgs.each_with_index do |bg_image, i|
+          new_file_name = if i.zero?
+                            "#{File.basename(file_name,
+                                             '.*')}.#{output_file_type}"
+                          else
+                            "#{File.basename(file_name,
+                                             '.*')} (#{i + 1}).#{output_file_type}"
+                          end
+          resized_bg_image = bg_image.thumbnail_image(input_image.width, height: input_image.height, crop: :centre)
+          result_image = resized_bg_image.composite2(rgb_cutout, :over)
+          result_image.write_to_file(File.join(output_path, new_file_name))
+        end
+      end
+
+      true
+    rescue StandardError => e
+      error_msg = "Error downloading background image: #{e.message}"
+      raise error_msg
     end
 
     def validate_argument_presence(options, key)
