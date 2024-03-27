@@ -60,7 +60,7 @@ module SkylabStudio
     def update_job(job_id, options = {})
       validate_argument_presence nil, :job_id
 
-      SkylabStudio::Request.new(@configuration).patch("jobs/#{options[:id]}", options)
+      SkylabStudio::Request.new(@configuration).patch("jobs/#{job_id}", options)
     end
 
     def queue_job(options = {})
