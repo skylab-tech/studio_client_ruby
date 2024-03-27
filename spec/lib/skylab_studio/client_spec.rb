@@ -48,13 +48,13 @@ RSpec.describe SkylabStudio::Client do
 
   describe '#get_job' do
     it 'should raise error with no id' do
-      expect { subject.get_job }.to raise_error(SkylabStudio::ClientNilArgument)
+      expect { subject.get_job }.to raise_error(ArgumentError)
     end
 
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:get).and_return(true)
 
-      subject.get_job(id: 123).should eq(true)
+      subject.get_job(123).should eq(true)
     end
   end
 
@@ -62,12 +62,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:patch).and_return(true)
 
-      subject.update_job(
-        id: 1,
-        job: {
-          profile_id: 2
-        }
-      ).should eq(true)
+      subject.update_job(1, { profile_id: 2 }).should eq(true)
     end
   end
 
@@ -75,9 +70,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:delete).and_return(true)
 
-      subject.delete_job(
-        id: 1
-      ).should eq(true)
+      subject.delete_job(1).should eq(true)
     end
   end
 
@@ -95,9 +88,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:post).and_return(true)
 
-      subject.cancel_job(
-        id: 1
-      ).should eq(true)
+      subject.cancel_job(1).should eq(true)
     end
   end
 
@@ -123,13 +114,13 @@ RSpec.describe SkylabStudio::Client do
 
   describe '#get_profile' do
     it 'should raise error with no id' do
-      expect { subject.get_profile }.to raise_error(SkylabStudio::ClientNilArgument)
+      expect { subject.get_profile }.to raise_error(ArgumentError)
     end
 
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:get).and_return(true)
 
-      subject.get_profile(id: 123).should eq(true)
+      subject.get_profile(123).should eq(true)
     end
   end
 
@@ -137,12 +128,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:patch).and_return(true)
 
-      subject.update_profile(
-        id: 1,
-        profile: {
-          name: 'Bar'
-        }
-      ).should eq(true)
+      subject.update_profile(1, { name: 'Bar' } ).should eq(true)
     end
   end
 
@@ -152,24 +138,27 @@ RSpec.describe SkylabStudio::Client do
         .to_return(status: 200, body: { id: 1, photo: {} }.to_json, headers: {})
 
       stub_request(:get, 'https://studio.skylabtech.ai/api/public/v1/photos/upload_url')
-        .to_return(status: 200, body: '', headers: {})
+        .to_return(status: 200, body: { url: 'http://test.test/' }.to_json, headers: {})
 
       stub_request(:get, 'https://studio.skylabtech.ai/api/public/v1/jobs/1')
-        .to_return(status: 200, body: '', headers: {})
+        .to_return(status: 200, body: {}.to_json, headers: {})
 
       stub_request(:delete, 'https://studio.skylabtech.ai/api/public/v1/photos/1')
         .to_return(status: 200, body: { id: 1 }.to_json, headers: {})
 
-      allow_any_instance_of(Net::HTTPSuccess).to receive(:body) { { id: 1 }.to_json }
+      stub_request(:put, /.*/)
+        .to_return(status: 200, body: {}.to_json, headers: {})
+
+      # allow_any_instance_of(Net::HTTPSuccess).to receive(:body) { { id: 1 }.to_json }
     end
 
     it 'should return response' do
       photo_path = "#{File.expand_path('../../', File.dirname(__FILE__))}/test-portrait-1.JPG"
       id = 1
 
-      expected_response = { "id" => id }
+      expected_response = { id: id, photo: {} }.to_json
 
-      subject.upload_job_photo(photo_path, id).should eq(expected_response)
+      expect(subject.upload_job_photo(photo_path, id).to_json).to eq(expected_response)
     end
   end
 
@@ -179,49 +168,40 @@ RSpec.describe SkylabStudio::Client do
         .to_return(status: 200, body: { id: 1, photo: {} }.to_json, headers: {})
 
       stub_request(:get, 'https://studio.skylabtech.ai/api/public/v1/photos/upload_url')
-        .to_return(status: 200, body: '', headers: {})
+        .to_return(status: 200, body: { url: 'http://test.test/' }.to_json, headers: {})
+
+      stub_request(:get, 'https://studio.skylabtech.ai/api/public/v1/profiles/upload_url')
+        .to_return(status: 200, body: { url: 'http://test.test/' }.to_json, headers: {})
 
       stub_request(:get, 'https://studio.skylabtech.ai/api/public/v1/jobs/1')
-        .to_return(status: 200, body: '', headers: {})
+        .to_return(status: 200, body: {}.to_json, headers: {})
 
       stub_request(:delete, 'https://studio.skylabtech.ai/api/public/v1/photos/1')
         .to_return(status: 200, body: { id: 1 }.to_json, headers: {})
 
-      allow_any_instance_of(Net::HTTPSuccess).to receive(:body) { { id: 1 }.to_json }
+      stub_request(:put, /.*/)
+        .to_return(status: 200, body: {}.to_json, headers: {})
     end
 
     it 'should return response' do
       photo_path = "#{File.expand_path('../../', File.dirname(__FILE__))}/test-portrait-1.JPG"
       id = 1
 
-      expected_response = { "id" => id }
+      expected_response = { id: id, photo: {} }.to_json
 
-      subject.upload_profile_photo(photo_path, 1).should eq(expected_response)
+      expect(subject.upload_profile_photo(photo_path, 1).to_json).to eq(expected_response)
     end
   end
 
   describe '#get_photo' do
     it 'should raise error with no id' do
-      expect { subject.get_photo }.to raise_error(SkylabStudio::ClientNilArgument)
+      expect { subject.get_photo }.to raise_error(ArgumentError)
     end
 
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:get).and_return(true)
 
-      subject.get_photo(id: 123).should eq(true)
-    end
-  end
-
-  describe '#update_photo' do
-    it 'should return response' do
-      SkylabStudio::Request.any_instance.stub(:patch).and_return(true)
-
-      subject.update_photo(
-        id: 1,
-        photo: {
-          name: 'Bar'
-        }
-      ).should eq(true)
+      subject.get_photo(123).should eq(true)
     end
   end
 
@@ -229,9 +209,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:delete).and_return(true)
 
-      subject.delete_photo(
-        id: 1
-      ).should eq(true)
+      subject.delete_photo(1).should eq(true)
     end
   end
 end

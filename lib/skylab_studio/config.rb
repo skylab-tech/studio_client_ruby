@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require_relative 'version'
 
 module SkylabStudio
   class Config
     attr_accessor :settings
 
-    DEFAULT_URL = 'https://studio.skylabtech.ai'.freeze
+    DEFAULT_URL = 'https://studio.skylabtech.ai'
 
     def self.defaults
       source = URI.parse(DEFAULT_URL)
@@ -17,7 +19,8 @@ module SkylabStudio
         port: source.port,
         api_version: 'v1',
         debug: true,
-        client_stub: "ruby-#{VERSION}"
+        client_stub: "ruby-#{VERSION}",
+        max_download_concurrency: 5
       }
     end
 

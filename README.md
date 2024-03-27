@@ -1,12 +1,14 @@
 # Skylab Studio Ruby Client
 
-[![CircleCI](https://circleci.com/gh/skylab-tech/studio_client_ruby.svg?style=svg)](https://circleci.com/gh/skylab-tech/studio_client_ruby)
-[![Maintainability](https://api.codeclimate.com/v1/badges/cd6f30ad2b05ecf2ce86/maintainability)](https://codeclimate.com/github/skylab-tech/studio_client_ruby/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/cd6f30ad2b05ecf2ce86/test_coverage)](https://codeclimate.com/github/skylab-tech/studio_client_ruby/test_coverage)
+A Ruby client for accessing the Skylab Studio service: [http://studio.skylabtech.ai](https://studio.skylabtech.ai)
 
-A Ruby client for accessing the Skylab Studio service.
+For all payload options, consult the [API documentation](https://studio-docs.skylabtech.ai/#tag/job/operation/createJob).
 
-[studio.skylabtech.ai](https://studio.skylabtech.ai)
+## Requirements
+
+libvips is required to be installed on your machine in order to install skylab-studio (for pyvips).
+
+- [Libvips documentation](https://www.libvips.org/install.html)
 
 ## Installation
 
@@ -50,11 +52,53 @@ In your application code where you want to access Skylab API:
 
 ```ruby
 begin
-  result = SkylabStudio::Client.new.create_job(job: { profile_id: 123 })
+  result = SkylabStudio::Client.new.create_job({ profile_id: 123 })
   puts result
 rescue => e
   puts "Error - #{e.class.name}: #{e.message}"
 end
+```
+
+## Example usage
+
+```ruby
+require skylab_studio
+
+client = SkylabStudio::Client.new()
+client = SkylabStudio::Client.new({ max_download_concurrency: 5 }) # to set download concurrency (default: 5)
+
+# CREATE PROFILE
+profile = client.create_profile({ name: "Test Profile", enable_crop: false, enable_color: false, enable_extract: true })
+
+# CREATE JOB
+job_name = "test-job-#{random_uuid}";
+job = client.create_job({ name: job_name, profile_id: profile['id'] });
+
+# UPLOAD PHOTO
+file_path = "/path/to/photo.jpg";
+client.upload_job_photo(file_path, job['id']);
+
+# QUEUE JOB
+queued_job = client.queue_job({ id: job['id'], callback_url: "http://server.callback.here/" });
+
+# NOTE: Once the job is queued, it will get queued, processed, and then complete
+# We will send a response to the specified callback_url with the output photo download urls
+```
+
+```ruby
+# OPTIONAL: If you want this SDK to handle photo downloads to a specified output folder
+
+# FETCH COMPLETED JOB (wait until job status is completed)
+completed_job = client.get_job(queued_job['id']);
+
+# DOWNLOAD COMPLETED JOB PHOTOS
+photos_list = completed_job['photos'];
+client.download_all_photos(photos_list, completed_job['profile'], "photos/output/");
+
+# OR, download single photo
+client.download_photo(photos_list[0]["id"], "/output/folder/"); # keep original filename
+client.download_photo(photos_list[0]["id"], "/output/folder/new_name.jpg"); # rename output image
+
 ```
 
 ### List all Jobs
@@ -70,7 +114,7 @@ client.list_jobs()
 - **job** - _hash_ - The attributes of the job to create
 
 ```ruby
-client.create_job(job: { profile_id: 123 })
+client.create_job({ name: "TEST JOB", profile_id: 123 })
 ```
 
 ### Get a Job
@@ -78,16 +122,40 @@ client.create_job(job: { profile_id: 123 })
 - **id** - _integer_ - The ID of the job
 
 ```ruby
-client.get_job(id: 123)
+client.get_job(123)
+```
+
+### Get a Job by name
+
+- **options** - _hash_ - The hash with job name
+
+```ruby
+client.get_job({ name: "TEST JOB" })
 ```
 
 ### Update a Job
 
 - **id** - _integer_ - The ID of the job to update
-- **job** - _hash_ - The attributes of the hob to update
+- **options** - _hash_ - The attributes of the job to update
 
 ```ruby
-client.update_job(id: 123, job: { profile_id: 456 })
+client.update_job(id: 123, { name: "new job name", profile_id: 456 })
+```
+
+### Queue a Job
+
+- **options** - _hash_ - The attributes of the job to queue
+
+```ruby
+client.queue_job({ id: 123, callback_url: "http://callback.url.here/ })
+```
+
+### Fetch Jobs in front
+
+- **job_id** - _hash_ - The ID of the job
+
+```ruby
+client.fetch_jobs_in_front(123)
 ```
 
 ### Delete a Job
@@ -95,15 +163,7 @@ client.update_job(id: 123, job: { profile_id: 456 })
 - **id** - _integer_ - The ID of the job to delete
 
 ```ruby
-client.delete_job(id: 123)
-```
-
-### Process a Job
-
-- **id** - _integer_ - The ID of the job to process
-
-```ruby
-client.process_job(id: 123)
+client.delete_job(123)
 ```
 
 ### Cancel a Job
@@ -111,7 +171,7 @@ client.process_job(id: 123)
 - **id** - _integer_ - The ID of the job to cancel
 
 ```ruby
-client.cancel_job(id: 123)
+client.cancel_job(123)
 ```
 
 ### List all Profiles
@@ -124,10 +184,10 @@ client.list_profiles()
 
 ### Create a Profile
 
-- **profile** - _hash_ - The attributes of the profile to create
+- **options** - _hash_ - The attributes of the profile to create
 
 ```ruby
-client.create_profile(profile: { profile_id: 123 })
+client.create_profile({ name: "New profile", enable_crop: false, enable_color: false, enable_extract: true })
 ```
 
 ### Get a Profile
@@ -135,54 +195,38 @@ client.create_profile(profile: { profile_id: 123 })
 - **id** - _integer_ - The ID of the profile
 
 ```ruby
-client.get_profile(id: 123)
+client.get_profile(123)
 ```
 
 ### Update a Profile
 
-- **id** - _integer_ - The ID of the profile to update
-- **profile** - _hash_ - The attributes of the hob to update
+- **profile_id** - _integer_ - The ID of the profile to update
+- **options** - _hash_ - The attributes of the profile to update
 
 ```ruby
-client.update_profile(id: 123, profile: { profile_id: 456 })
-```
-
-### Delete a Profile
-
-- **id** - _integer_ - The ID of the profile to delete
-
-```ruby
-client.delete_profile(id: 123)
+client.update_profile(123, { name: "new profile name", enable_color: true })
 ```
 
 ### Upload Job Photo
 
 This method handles validating a photo, creating a photo object and uploading it to your job/profile's s3 bucket. If the bucket upload process fails, it retries 3 times and if failures persist, the photo object is deleted.
 
-- **id** - _integer_ - The ID of the job to associate the image file upload to
 - **photo_path** - _string_ - The current local file path of the image file
+- **job_id** - _integer_ - The ID of the job to associate the image file upload to
 
 ```ruby
-client.upload_job_photo(id: 123, photo_path: '/path/to/photo.jpg')
+client.upload_job_photo('/path/to/photo.jpg', 123)
 ```
 
 ### Upload Profile Photo
 
 This function handles validating a background photo for a profile. Note: enable_extract and replace_background (profile attributes) MUST be true in order to create background photos. Follows the same upload process as upload_job_photo.
 
-- **id** - _integer_ - The ID of the profile to associate the image file upload to
 - **photo_path** - _string_ - The current local file path of the image file
+- **profile_id** - _integer_ - The ID of the profile to associate the image file upload to
 
 ```ruby
-client.upload_profile_photo(id: 123, photo_path: '/path/to/photo.jpg')
-```
-
-### Create a Photo
-
-- **photo** - _hash_ - The attributes of the photo to create
-
-```ruby
-client.create_photo(photo: { photo_id: 123 })
+client.upload_profile_photo('/path/to/photo.jpg', 123)
 ```
 
 ### Get a Photo
@@ -190,16 +234,7 @@ client.create_photo(photo: { photo_id: 123 })
 - **id** - _integer_ - The ID of the photo
 
 ```ruby
-client.get_photo(id: 123)
-```
-
-### Update a Photo
-
-- **id** - _integer_ - The ID of the photo to update
-- **photo** - _hash_ - The attributes of the hob to update
-
-```ruby
-client.update_photo(id: 123, photo: { photo_id: 456 })
+client.get_photo(123)
 ```
 
 ### Delete a Photo
@@ -207,7 +242,35 @@ client.update_photo(id: 123, photo: { photo_id: 456 })
 - **id** - _integer_ - The ID of the photo to delete
 
 ```ruby
-client.delete_photo(id: 123)
+client.delete_photo(123)
+```
+
+### Get job photos
+
+- **id** - _integer_ - The ID of the job to get photos from
+
+```ruby
+client.get_job_photos(123)
+```
+
+### Download photo(s)
+
+This function handles downloading the output photos to a specified directory.
+
+```ruby
+photos_list = completed_job['photos']
+
+download_results = client.download_all_photos(photos_list, completed_job['profile'], "/output/folder/path")
+
+Output:
+{'success_photos': ['1.JPG'], 'errored_photos': []}
+```
+
+OR
+
+```ruby
+client.download_photo(photo_id, "/output/folder/path") # download photo with original filename to a directory
+client.download_photo(photo_id, "/output/folder/test.jpg") # download photo with new filename to a directory
 ```
 
 ## Errors
