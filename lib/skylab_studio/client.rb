@@ -58,7 +58,7 @@ module SkylabStudio
     end
 
     def update_job(job_id, options = {})
-      validate_argument_presence options, :job_id
+      validate_argument_presence nil, :job_id
 
       SkylabStudio::Request.new(@configuration).patch("jobs/#{options[:id]}", options)
     end
@@ -69,8 +69,8 @@ module SkylabStudio
       SkylabStudio::Request.new(@configuration).post("jobs/#{options[:id]}/queue", options)
     end
 
-    def fetch_jobs_in_front(options = {})
-      SkylabStudio::Request.new(@configuration).get("jobs/#{options[:id]}/jobs_in_front", options)
+    def fetch_jobs_in_front(job_id)
+      SkylabStudio::Request.new(@configuration).get("jobs/#{job_id}/jobs_in_front")
     end
 
     def delete_job(job_id)
@@ -102,7 +102,7 @@ module SkylabStudio
     end
 
     def update_profile(profile_id, options = {})
-      validate_argument_presence options, :id
+      validate_argument_presence nil, :profile_id
 
       SkylabStudio::Request.new(@configuration).patch("profiles/#{profile_id}", options)
     end

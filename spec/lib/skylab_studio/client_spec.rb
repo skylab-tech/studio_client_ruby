@@ -62,12 +62,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:patch).and_return(true)
 
-      subject.update_job(
-        id: 1,
-        job: {
-          profile_id: 2
-        }
-      ).should eq(true)
+      subject.update_job(1, { profile_id: 2 }).should eq(true)
     end
   end
 
@@ -75,9 +70,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:delete).and_return(true)
 
-      subject.delete_job(
-        id: 1
-      ).should eq(true)
+      subject.delete_job(1).should eq(true)
     end
   end
 
@@ -135,12 +128,7 @@ RSpec.describe SkylabStudio::Client do
     it 'should return response' do
       SkylabStudio::Request.any_instance.stub(:patch).and_return(true)
 
-      subject.update_profile(
-        id: 1,
-        profile: {
-          name: 'Bar'
-        }
-      ).should eq(true)
+      subject.update_profile(1, { name: 'Bar' } ).should eq(true)
     end
   end
 
@@ -214,19 +202,6 @@ RSpec.describe SkylabStudio::Client do
       SkylabStudio::Request.any_instance.stub(:get).and_return(true)
 
       subject.get_photo(123).should eq(true)
-    end
-  end
-
-  describe '#update_photo' do
-    it 'should return response' do
-      SkylabStudio::Request.any_instance.stub(:patch).and_return(true)
-
-      subject.update_photo(
-        id: 1,
-        photo: {
-          name: 'Bar'
-        }
-      ).should eq(true)
     end
   end
 
