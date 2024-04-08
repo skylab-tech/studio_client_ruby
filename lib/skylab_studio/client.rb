@@ -229,6 +229,17 @@ module SkylabStudio
       end
     end
 
+    def validate_hmac_headers(secret_key, job_json_string, request_timestamp, signature)
+      message = "#{request_timestamp}:#{job_json_string}".encode('utf-8')
+    
+      # Create the HMAC signature using SHA-256
+      hmac_digest = OpenSSL::HMAC.digest('sha256', secret_key.encode('utf-8'), message)
+      generated_sig = Base64.strict_encode64(hmac_digest).force_encoding('utf-8')
+    
+      # Compare the provided signature with the generated signature
+      signature == generated_sig
+    end
+
     private
 
     def get_upload_url(options = { use_cache_upload: false })
