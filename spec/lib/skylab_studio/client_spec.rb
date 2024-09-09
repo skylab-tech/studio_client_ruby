@@ -187,7 +187,7 @@ RSpec.describe SkylabStudio::Client do
       photo_path = "#{File.expand_path('../../', File.dirname(__FILE__))}/test-portrait-1.JPG"
       id = 1
 
-      expected_response = { photo: { id: }, upload_response: 200 }.to_json
+      expected_response = { photo: { id: id }, upload_response: 200 }.to_json
 
       expect(subject.upload_profile_photo(photo_path, 1).to_json).to eq(expected_response)
     end
