@@ -135,13 +135,13 @@ RSpec.describe SkylabStudio::Client do
   describe '#upload_job_photo' do
     before do
       stub_request(:post, 'https://studio.skylabtech.ai/api/public/v1/photos')
-        .to_return(status: 200, body: { id: 1, photo: {} }.to_json, headers: {})
+        .to_return(status: 200, body: { id: 1 }.to_json, headers: {})
 
       stub_request(:get, 'https://studio.skylabtech.ai/api/public/v1/photos/upload_url')
         .to_return(status: 200, body: { url: 'http://test.test/' }.to_json, headers: {})
 
       stub_request(:get, 'https://studio.skylabtech.ai/api/public/v1/jobs/1')
-        .to_return(status: 200, body: {}.to_json, headers: {})
+        .to_return(status: 200, body: { type: 'regular' }.to_json, headers: {})
 
       stub_request(:delete, 'https://studio.skylabtech.ai/api/public/v1/photos/1')
         .to_return(status: 200, body: { id: 1 }.to_json, headers: {})
@@ -156,7 +156,7 @@ RSpec.describe SkylabStudio::Client do
       photo_path = "#{File.expand_path('../../', File.dirname(__FILE__))}/test-portrait-1.JPG"
       id = 1
 
-      expected_response = { id: id, photo: {} }.to_json
+      expected_response = { photo: { id: }, upload_response: 200 }.to_json
 
       expect(subject.upload_job_photo(photo_path, id).to_json).to eq(expected_response)
     end
@@ -165,7 +165,7 @@ RSpec.describe SkylabStudio::Client do
   describe '#upload_profile_photo' do
     before do
       stub_request(:post, 'https://studio.skylabtech.ai/api/public/v1/photos')
-        .to_return(status: 200, body: { id: 1, photo: {} }.to_json, headers: {})
+        .to_return(status: 200, body: { id: 1 }.to_json, headers: {})
 
       stub_request(:get, 'https://studio.skylabtech.ai/api/public/v1/photos/upload_url')
         .to_return(status: 200, body: { url: 'http://test.test/' }.to_json, headers: {})
@@ -187,7 +187,7 @@ RSpec.describe SkylabStudio::Client do
       photo_path = "#{File.expand_path('../../', File.dirname(__FILE__))}/test-portrait-1.JPG"
       id = 1
 
-      expected_response = { id: id, photo: {} }.to_json
+      expected_response = { photo: { id: }, upload_response: 200 }.to_json
 
       expect(subject.upload_profile_photo(photo_path, 1).to_json).to eq(expected_response)
     end
