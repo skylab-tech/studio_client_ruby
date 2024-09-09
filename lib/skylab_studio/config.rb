@@ -6,7 +6,7 @@ module SkylabStudio
   class Config
     attr_accessor :settings
 
-    DEFAULT_URL = 'https://studio.skylabtech.ai'
+    DEFAULT_URL = 'https://studio-staging.skylabtech.ai'
 
     def self.defaults
       source = URI.parse(DEFAULT_URL)

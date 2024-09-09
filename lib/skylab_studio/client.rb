@@ -275,9 +275,11 @@ module SkylabStudio
       photo_data = { "#{model}_id": id, name: "#{photo_name}#{photo_ext}", path: photo_path, 'use_cache_upload': false }
 
       if model == 'job'
-        job_type = get_job(id)['type']
+        job = get_job(id)
 
-        headers = { 'X-Amz-Tagging' => 'job=photo&api=true' } if job_type == 'regular'
+        raise "No job found with id: #{id}" unless job.has_key?('type')
+
+        headers = { 'X-Amz-Tagging' => 'job=photo&api=true' } if job['type'] == 'regular'
       end
 
       # Ask studio to create the photo record
@@ -303,36 +305,37 @@ module SkylabStudio
       # PUT request to presigned url with image data
       headers['Content-MD5'] = b64md5
 
-      begin
-        uri = URI(upload_url)
-        request = Net::HTTP::Put.new(uri, headers)
-        request.body = data
-        upload_photo_resp = Net::HTTP.start(uri.hostname) { |http| http.request(request) }
+      retries = 0
+      while retries < 3
+        begin
+          uri = URI(upload_url)
+          request = Net::HTTP::Put.new(uri, headers)
+          request.body = data
 
-        unless upload_photo_resp
-          puts 'First upload attempt failed, retrying...'
-          retry_count = 0
-          # Retry upload
+          upload_photo_resp = Net::HTTP.start(uri.hostname) { |http| http.request(request) }
+          upload_status_code = upload_photo_resp.code.to_i
 
-          while retry_count < 3
-            upload_photo_resp = Net::HTTP.start(uri.hostname) { |http| http.request(request) }
-            if upload_photo_resp
-              break # Upload was successful, exit the loop
-            elsif retry_count == 2 # Check if retry count is 2 (0-based indexing)
-              raise 'Unable to upload to the bucket after retrying.'
-            else
-              sleep(1) # Wait for a moment before retrying
-              retry_count += 1
-            end
+          if upload_status_code >= 400
+            raise StandardError.new("HTTP Error: #{upload_photo_resp.code}")
+          end
+
+          # If no error, the upload is successful, exit the loop
+          break
+        rescue Exception => e
+          if retries == 2
+            delete_photo(photo_id)
+            Sentry.capture_exception(e)
+            raise e
+          else
+            # If we haven't retried 3 times, wait and retry
+            puts "Attempt ##{retries + 1} to upload failed, retrying..."
+            retries += 1
+            sleep(retries + 1)
           end
         end
-      rescue StandardError => e
-        puts "An exception of type #{e.class} occurred: #{e.message}"
-        puts 'Deleting created, but unuploaded photo...'
-        delete_photo({ id: photo_id }) if photo_id
       end
 
-      photo_response_json
+      { photo: photo_response_json, upload_response: upload_status_code }
     end
 
     def download_image_async(image_url)
