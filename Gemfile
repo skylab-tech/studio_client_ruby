@@ -23,4 +23,8 @@ group :test do
 
   # Use for mocking external requests
   gem 'webmock', '~> 3.19.1'
+
+  # Use for Sentry
+  gem "stackprof"
+  gem "sentry-ruby"
 end
